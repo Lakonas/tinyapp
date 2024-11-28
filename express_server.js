@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
+  
 };
 
 app.get("/", (req, res) => {
@@ -49,8 +50,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL //Main obejective to save short URL and NEW url to our URLS object
+                                 //Grab longURL with req.body.longurl. Generate short URL
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`); // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/:id", (req, res) => {

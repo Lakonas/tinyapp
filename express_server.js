@@ -71,5 +71,6 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
    console.log(req.params,"req.params");
    const  id = req.params.id;
-
+   delete urls[id];
+   res.redirect('/urls');
 });

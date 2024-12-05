@@ -67,3 +67,9 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: fullURL/* What goes here? */ };
   res.render("urls_show", templateVars);
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+   console.log(req.params,"req.params");
+   const  id = req.params.id;
+
+});

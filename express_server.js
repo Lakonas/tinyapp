@@ -74,3 +74,16 @@ app.post("/urls/:id/delete", (req, res) => {
    delete urlDatabase[id];
    res.redirect('/urls');
 });
+
+app.get("/urls/:id/edit", (req,res) => {
+  const shortURL = req.params.id;
+  const longURL = req.body.longURL;
+
+  urlDatabase[shortURL] = longURL;
+  const templateVars = {
+    shortURL: shortURL,  
+    longURL: longURL,   
+  };
+
+  res.render('edit-url', templateVars);
+});

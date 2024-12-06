@@ -85,7 +85,7 @@ app.get("/urls/:id/edit", (req,res) => {
     longURL: longURL,   
   };
 
-  res.render('urls_show', templateVars);
+  res.render('urls_show',templateVars);
 });
 
 app.post('/urls/:id', (req, res) => {

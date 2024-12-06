@@ -65,7 +65,7 @@ app.get("/urls/:id", (req, res) => {
   const fullURL = urlDatabase[urlID];
   console.log(fullURL, "fullURL")
   const templateVars = { id: req.params.id, longURL: fullURL/* What goes here? */ };
-  res.render("urls_index", templateVars);
+  res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -85,16 +85,16 @@ app.get("/urls/:id/edit", (req,res) => {
     longURL: longURL,   
   };
 
-  res.render('urls_index', templateVars);
+  res.render('urls_show', templateVars);
 });
 
 app.post('/urls/:id', (req, res) => {
-  const shortURL = req.params.id; // Get the short URL from the URL params
-  const newLongURL = req.body.longURL; // Get the updated long URL from the form input
+  const shortURL = req.params.id; 
+  const newLongURL = req.body.longURL; 
 
-  // Update the long URL in the database
+  
   urlDatabase[shortURL] = newLongURL;
 
-  // Redirect to the page displaying the updated short URL
+  
   res.redirect(`/urls/${shortURL}`);
 });

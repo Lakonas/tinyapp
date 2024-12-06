@@ -65,7 +65,7 @@ app.get("/urls/:id", (req, res) => {
   const fullURL = urlDatabase[urlID];
   console.log(fullURL, "fullURL")
   const templateVars = { id: req.params.id, longURL: fullURL/* What goes here? */ };
-  res.render("urls_show", templateVars);
+  res.render("urls_index", templateVars);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -77,7 +77,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.get("/urls/:id/edit", (req,res) => {
   const shortURL = req.params.id;
-  const longURL = req.body.longURL;
+  const longURL = urlDatabase[shortURL];
 
   urlDatabase[shortURL] = longURL;
   const templateVars = {
@@ -85,7 +85,7 @@ app.get("/urls/:id/edit", (req,res) => {
     longURL: longURL,   
   };
 
-  res.render('edit-url', templateVars);
+  res.render('urls_index', templateVars);
 });
 
 app.post('/urls/:id', (req, res) => {

@@ -12,9 +12,8 @@
   </head>
 
   <body>
-    <form method="POST" action="/urls/<%= id %>/">
-      <input type="submit" value="Edit">
-    </form>
+    <a href="/urls/<%= id %>/edit"><button>Edit</button></a>
+
     <%- include('partials/_header')%>
     <div class="card text-center">
       <div class="card-header"></div>

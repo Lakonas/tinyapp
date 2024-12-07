@@ -88,7 +88,7 @@ app.get("/urls/:id/edit", (req,res) => {
   res.render('urls_show',templateVars);
 });
 
-app.post('/urls/:id', (req, res) => {
+/*app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id; 
   const newLongURL = req.body.longURL; 
 
@@ -97,4 +97,13 @@ app.post('/urls/:id', (req, res) => {
 
   
   res.redirect(`/urls/${shortURL}`);
+});*/
+
+app.post('/urls/:id', (req, res) => {
+  const shortURL = req.params.id; 
+  const newLongURL = req.body.longURL; 
+
+  urlDatabase[shortURL] = newLongURL; // Update the URL in the database
+
+  res.redirect('/urls'); // Redirect to the list of URLs
 });

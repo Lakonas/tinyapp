@@ -11,6 +11,8 @@ function generateRandomString(length = 6) {
   return result;
 }
 
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 app.set("view engine", "ejs")
 app.use(express.urlencoded({ extended: true }));
@@ -40,7 +42,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase 
+    
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -81,6 +87,7 @@ app.get("/urls/:id/edit", (req,res) => {
 
   urlDatabase[shortURL] = longURL;
   const templateVars = {
+    username: req.cookies["username"],
     shortURL: shortURL,  
     longURL: longURL,   
   };
@@ -108,9 +115,12 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls'); // Redirect to the list of URLs
 });
 
-app.post('/login', (req, res) =>  {
-  const {username} = req.body;
-  res.cookie('username', username);
-  res.redirect('/urls');
+app.post('/login', (req, res) => {
+  const { username } = req.body;
+  
 
+  
+  // Redirect to /urls after login
+  res.redirect('/urls');
 });
+  

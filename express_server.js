@@ -1,4 +1,6 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const morgan = require('morgan')
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -11,11 +13,12 @@ function generateRandomString(length = 6) {
   return result;
 }
 
-const cookieParser = require("cookie-parser");
-app.use(cookieParser());
 
-app.set("view engine", "ejs")
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+app.set("view engine", "ejs")
+
 
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
@@ -52,7 +55,10 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {
+    username: req.cookies["username"],  // Retrieve username from cookies
+  };
+  res.render("urls_new", templateVars);  // Pass it to the view
 });
 
 app.post("/urls", (req, res) => {
@@ -70,7 +76,12 @@ app.get("/urls/:id", (req, res) => {
   console.log(urlID, "urlID");
   const fullURL = urlDatabase[urlID];
   console.log(fullURL, "fullURL")
-  const templateVars = { id: req.params.id, longURL: fullURL/* What goes here? */ };
+  const templateVars = { 
+    username: req.cookies["username"],
+    id: req.params.id, 
+    longURL: fullURL };
+
+
   res.render("urls_show", templateVars);
 });
 
@@ -118,4 +129,8 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie('username'); // Remove the username cookie
   res.redirect('/urls'); // Redirect to the URLs page
+});
+
+app.get('/register', (req, res) => {
+  res.render('register'); 
 });

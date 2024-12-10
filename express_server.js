@@ -19,6 +19,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.set("view engine", "ejs")
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "a@a.com",
+    password: "1",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "b@b.com",
+    password: "2",
+  },
+};
 
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
@@ -133,4 +145,25 @@ app.post('/logout', (req, res) => {
 
 app.get('/register', (req, res) => {
   res.render('register'); 
+});
+
+app.post('/register', (req, res) => {
+  const {email, password} = req.body;
+  let validUser;
+  for (let user in users) {
+    if(users[user].email === email && users[user].password ===password) {
+      validUser = users[user];
+    }
+  }
+
+  if(!validUser){
+    return res.send('Wrong email or password');
+  }
+
+  if(validUser) {
+    res.cookie("userid". validUser.id);
+    red.redirect('/urls');
+  }
+
+
 });

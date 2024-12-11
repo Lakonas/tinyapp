@@ -211,4 +211,3 @@ app.post('/register', (req, res) => {
   // Redirect to the /urls page after successful registration
   res.redirect('/urls')
 });
-

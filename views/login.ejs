@@ -4,19 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
+  <style>
+    /* Basic CSS styling */
+    body {
+      font-family: Arial, sans-serif; /* Set font for the page */
+      margin: 0;                /* Remove default margin */
+      background-color: #f4f4f9; /* Set a light background color */
+      padding-left: 30px;        /* Add some space on the left */
+    }
+
+    .login-container {
+      background-color: #fff;  /* White background for the form */
+      padding: 20px;            /* Add padding inside the container */
+      border-radius: 8px;       /* Rounded corners */
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
+      width: 300px;             /* Set a fixed width for the login box */
+      margin-top: 100px;        /* Add space from the top */
+    }
+
+    h1 {
+      text-align: center;       /* Center the title */
+      font-size: 24px;          /* Increase font size for the title */
+      font-weight: bold;        /* Make title bold */
+      margin-bottom: 20px;      /* Space between title and form */
+    }
+
+    label {
+      font-size: 16px;          /* Set a larger font size for labels */
+      margin-bottom: 8px;       /* Space between label and input */
+      display: block;           /* Ensure the label takes up full width */
+    }
+
+    input {
+      width: 100%;              /* Make inputs fill the container */
+      padding: 10px;            /* Add padding inside the input fields */
+      margin-bottom: 20px;      /* Space between the input fields */
+      border: 1px solid #ccc;   /* Light border around the inputs */
+      border-radius: 4px;       /* Rounded corners for the inputs */
+      font-size: 16px;          /* Set font size inside inputs */
+    }
+
+    button {
+      width: 100%;              /* Make the button fill the container */
+      padding: 10px;            /* Add padding inside the button */
+      background-color: #4CAF50; /* Set a green background color */
+      color: white;             /* White text color */
+      font-size: 16px;          /* Set font size for the button */
+      border: none;             /* Remove default border */
+      border-radius: 4px;       /* Rounded corners for the button */
+      cursor: pointer;         /* Change cursor to pointer on hover */
+    }
+
+    button:hover {
+      background-color: #45a049; /* Darken button color on hover */
+    }
+  </style>
 </head>
 <body>
-  <form method="POST" action="/login">
-    <label>Email</label>
-    <input type="email" name="email" required />
-    <br/>
-    <label>Password</label>
-    <input type="password"name="password" required/>
-    <br/>
-    <button type="submit">Login</button>
-
-  
-  </form>
-  
+  <div class="login-container">
+    <h1>Login</h1>
+    <form method="POST" action="/login">
+      <label for="email">Email</label>
+      <input type="email" name="email" required id="email" />
+      
+      <label for="password">Password</label>
+      <input type="password" name="password" required id="password" />
+      
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </body>
 </html>

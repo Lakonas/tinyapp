@@ -161,7 +161,7 @@ app.post('/login', (req, res) => {
     }
     if(userId) {
       console.log("Logging in user with ID:", userId);
-      res.cookie('user_Id', userId);
+      res.cookie('user_id', userId);
       res.redirect('/urls');
     }else {
       console.log("Invalid credentials.");

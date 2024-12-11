@@ -13,7 +13,7 @@ function generateRandomString(length = 6) {
   return result;
 }
 
-
+//Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -57,9 +57,12 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const userId = req.cookies["user_id"];//change
+  const user = users[userId];
+
   const templateVars = {
-    username: req.cookies["username"],
-    urls: urlDatabase 
+    user: user,
+    urls: urlDatabase //change
     
   };
   res.render("urls_index", templateVars);
@@ -67,8 +70,11 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId]; // Lookup user object using user_id cookie
+
   const templateVars = {
-    username: req.cookies["username"],  // Retrieve username from cookies
+    user: user,  // 
   };
   res.render("urls_new", templateVars);  // Pass it to the view
 });
@@ -83,13 +89,18 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const user = users[userId];
+
   console.log(req.params,"req.params")
   const urlID = req.params.id;
   console.log(urlID, "urlID");
   const fullURL = urlDatabase[urlID];
   console.log(fullURL, "fullURL")
+
+
   const templateVars = { 
-    username: req.cookies["username"],
+    user: user,
     id: req.params.id, 
     longURL: fullURL };
 
@@ -148,22 +159,36 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const {email, password} = req.body;
-  let validUser;
-  for (let user in users) {
-    if(users[user].email === email && users[user].password ===password) {
-      validUser = users[user];
+ 
+  const { email, password } = req.body;
+
+  // Check if email already exists
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return res.send('Email already in use!');
     }
   }
 
-  if(!validUser){
-    return res.send('Wrong email or password');
-  }
+  // Generate a unique user ID and create a new user
+  const userId = generateRandomString();
+  
+  // Create the user object
+  const user = {
+    id: userId,
+    email: email,
+    password: password
+  };
 
-  if(validUser) {
-    res.cookie("userid". validUser.id);
-    red.redirect('/urls');
-  }
+  // Add the new user object to the 'users' global object
+  users[userId] = user;
 
+  // Set the user_id cookie
+  res.cookie("user_id", userId);
 
+  // Log the users object to verify the new user is added
+  console.log(users);
+
+  // Redirect to the /urls page after successful registration
+  res.redirect('/urls')
 });
+

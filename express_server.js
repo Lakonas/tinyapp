@@ -141,7 +141,7 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const { username } = req.body;
+  const { email, password} = req.body;
   
   res.cookie('userId', userId)
   
@@ -150,7 +150,7 @@ app.post('/login', (req, res) => {
 });
   
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id') // Remove the username cookie
+  res.clearCookie('user_id') 
   res.redirect('/urls'); // Redirect to the URLs page
 });
 
@@ -165,7 +165,7 @@ app.post('/register', (req, res) => {
   // Check if email already exists
   for (let userId in users) {
     if (users[userId].email === email) {
-      return res.send('Email already in use!');
+      return res.status(400).send('Email already in use!');
     }
   }
   if (!email || !password) {

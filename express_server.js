@@ -143,10 +143,27 @@ app.post('/urls/:id', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password} = req.body;
   
-  res.cookie('userId', userId)
+  let userId = null;
+
+  for (let user in users) {
+    if( users[user].email   === email && users[user].password === password) {
+
+      console.log("User Found:", users[user]);
+      userId = users[user].id;
+      break;
+     }
+    }
+    if(userId) {
+      console.log("Logging in user with ID:", userId);
+      res.cookie('userId', userId);
+      res.redirect('/urls');
+    }else {
+      console.log("Invalid credentials.");
+      res.send('Invalid email Or Passowrd')
+    }
   
-  // Redirect to /urls after login
-  res.redirect('/urls');
+  
+  
 });
   
 app.post('/logout', (req, res) => {

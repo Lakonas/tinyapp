@@ -17,19 +17,20 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-      <% if (username) { %>
+      <% if (user) { %>  <!-- Check if user object exists -->
         <span class="navbar-text text-light ml-auto mr-2">
-          Logged in as <strong><%= username %></strong>
+          Logged in as <strong><%= user.email %></strong>  <!-- Display user email -->
         </span>
-        <!-- Logout form goes here if needed (optional) -->
+        <!-- Logout form -->
         <form method="POST" action="/logout" class="form-inline ml-auto">
           <input type="submit" value="Logout" class="btn btn-outline-light">
         </form>
-      <% } else { %>
+      <% } else { %> <!-- If no user is logged in -->
         <form method="POST" action="/login" class="form-inline ml-auto">
-          <input type="text" name="username" placeholder="Username" required class="form-control mr-2">
+          <input type="email" name="email" placeholder="Email" required class="form-control mr-2"> <!-- Changed input to email -->
+          <input type="password" name="password" placeholder="Password" required class="form-control mr-2"> <!-- Add password field -->
           <input type="submit" value="Login" class="btn btn-outline-light">
-        </form> 
+        </form>
       <% } %>
     </div>
   </nav>

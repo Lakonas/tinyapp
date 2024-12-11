@@ -18,20 +18,29 @@
  </head>
 
 <body>
-  
-  
-  
-  <div class="login-container">
-    <h1>Login</h1>
-    <form method="POST" action="/login">
-      <label for="email">Email</label>
-      <input type="email" name="email" required id="email" />
-      
-      <label for="password">Password</label>
-      <input type="password" name="password" required id="password" />
-      
-      <button type="submit">Login</button>
-    </form>
+  <body>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="login-container">
+
+        
+        <h1 class="text-left mb-4">Login</h1>
+        <form method="POST" action="/login">
+          
+          <!-- Email Field -->
+          <div class="form-group mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" required id="email" class="form-control" placeholder="Enter your email" />
+          </div>
+          
+          <!-- Password Field -->
+          <div class="form-group mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" required id="password" class="form-control" placeholder="Enter your password" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
   </div>
 </body>
 </html>

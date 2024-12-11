@@ -17,18 +17,18 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-      <% if (user) { %>  <!-- Check if user object exists -->
+      <% if (user) { %>  
         <span class="navbar-text text-light ml-auto mr-2">
-          Logged in as <strong><%= user.email %></strong>  <!-- Display user email -->
+          Logged in as <strong><%= user.email %></strong> 
         </span>
         <!-- Logout form -->
         <form method="POST" action="/logout">
           <input type="submit" value="Logout">
         </form>
-      <% } else { %> <!-- If no user is logged in -->
-        <a href="/login" class="nav-item nav-link">Login</a> <!-- Link to login page -->
+      <% } else { %> 
+        <a href="/login" class="nav-item nav-link">Login</a> 
           <a href="/register" class="nav-item nav-link">Register</a> <!-- Link to register page -->
       <% } %>
     </div>
   </nav>
-</header>
+</header> 

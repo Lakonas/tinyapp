@@ -3,16 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+  integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+  crossorigin="anonymous"
+/>
   <title>Register</title>
 </head>
 <body>
-  <form action="/register" method = "post">
-    <label for="email">Email Address:</label>
-    <input type="email" name="email">
-    <label for="password">Password</label>
-    <input type="password" name="password">
-    <button type="submit">Register</button>
+  
+  <body>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="login-container">
 
-  </form>
+        
+        <h1 class="text-left mb-4">Create Account</h1>
+        <form method="POST" action="/register">
+          
+          <!-- Email Field -->
+          <div class="form-group mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" required id="email" class="form-control" placeholder="Enter your email" />
+          </div>
+          
+          <!-- Password Field -->
+          <div class="form-group mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" required id="password" class="form-control" placeholder="Enter your password" />
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+  </div>
 </body>
 </html>

@@ -143,7 +143,7 @@ app.post('/urls/:id', (req, res) => {
 app.post('/login', (req, res) => {
   const { username } = req.body;
   
-  res.cookie('username', username)
+  res.cookie('userId', userId)
   
   // Redirect to /urls after login
   res.redirect('/urls');

@@ -140,6 +140,12 @@ app.post('/urls/:id', (req, res) => {
   res.redirect('/urls'); // Redirect to the list of URLs
 });
 
+
+app.get("/login", (req, res) => {
+  res.render('login'); // You can render a view, such as login.ejs
+});
+
+
 app.post('/login', (req, res) => {
   const { email, password} = req.body;
   
@@ -155,7 +161,7 @@ app.post('/login', (req, res) => {
     }
     if(userId) {
       console.log("Logging in user with ID:", userId);
-      res.cookie('userId', userId);
+      res.cookie('user_Id', userId);
       res.redirect('/urls');
     }else {
       console.log("Invalid credentials.");
@@ -167,8 +173,8 @@ app.post('/login', (req, res) => {
 });
   
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id') 
-  res.redirect('/urls'); // Redirect to the URLs page
+  res.clearCookie('user_id');  // Clear the user_id cookie
+  res.redirect('/urls');
 });
 
 app.get('/register', (req, res) => {

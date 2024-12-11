@@ -150,7 +150,7 @@ app.post('/login', (req, res) => {
 });
   
 app.post('/logout', (req, res) => {
-  res.clearCookie('username'); // Remove the username cookie
+  res.clearCookie('user_id') // Remove the username cookie
   res.redirect('/urls'); // Redirect to the URLs page
 });
 
@@ -167,6 +167,9 @@ app.post('/register', (req, res) => {
     if (users[userId].email === email) {
       return res.send('Email already in use!');
     }
+  }
+  if (!email || !password) {
+    return res.status(400).send('Email and password fields cannot be empty');
   }
 
   // Generate a unique user ID and create a new user

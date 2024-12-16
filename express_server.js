@@ -71,6 +71,11 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
+
+  if(!userId) {
+
+    return res.redirect("/login");
+  }
   const user = users[userId]; // Lookup user object using user_id cookie
 
   const templateVars = {
@@ -80,6 +85,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const userId = req.cookies["user_id"];
+
+  if(!userId) {
+    return res.send ("<html><body>You must be logged in to create a new url. Please log in first.</body></html>")
+  }
+
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL; //Main obejective to save short URL and NEW url to our URLS object
@@ -142,6 +153,12 @@ app.post('/urls/:id', (req, res) => {
 
 
 app.get("/login", (req, res) => {
+
+  const userId = req.cookies["user_id"];
+  if (userId) {
+    // Redirect logged-in users to /urls
+    return res.redirect("/urls");
+  }
   const templateVars = {
     user: null,
   };
@@ -183,6 +200,13 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  const userId = req.cookies["user_id"];
+  if (userId) {
+    // Redirect logged-in users to /urls
+    return res.redirect("/urls");
+  }
+  
+  
   const templateVars = {
     user: null,
   };
@@ -222,3 +246,15 @@ app.post('/register', (req, res) => {
   console.log(users);
   res.redirect('/urls');
 });
+
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+
+  if(!longURL) {
+    return res.status(404).render("404error", {message: " shortened URL not found"});
+
+  }
+  res.redirect(longURL);
+})
+

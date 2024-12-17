@@ -33,9 +33,14 @@ const users = {
 };
 
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-  
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 app.get("/", (req, res) => {
@@ -58,7 +63,23 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];//change
+
+  if (!userId) {
+    // If no user is logged in, render a message prompting them to log in or register
+    const templateVars = {
+      user: null,
+      message: "You must be logged in to view your URLs. Please log in or register first."
+    };
+    return res.render("urls_index", templateVars);
+  }
   const user = users[userId];
+
+  const userUrls = {};
+  for (let id in urlDatabase) {
+    if (urlDatabase[id].userID === userId) {
+      userUrls[id] = urlDatabase[id];
+    }
+  }
 
   const templateVars = {
     user: user,
@@ -72,7 +93,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
 
-  if(!userId) {
+  if (!userId) {
 
     return res.redirect("/login");
   }
@@ -87,34 +108,34 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
 
-  if(!userId) {
-    return res.send ("<html><body>You must be logged in to create a new url. Please log in first.</body></html>")
+  if (!userId) {
+    return res.send("<html><body>You must be logged in to create a new url. Please log in first.</body></html>");
   }
 
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL; //Main obejective to save short URL and NEW url to our URLS object
-  //Grab longURL with req.body.longurl. Generate short URL
-  console.log(req.body); // Log the POST request body to the console
-  res.redirect(`/urls/${shortURL}`); // Respond with 'Ok' (we will replace this)
+
+  // Save the new URL with the associated user ID
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userId, // Associate the URL with the logged-in user
+  };
+
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
 
-  console.log(req.params,"req.params");
   const urlID = req.params.id;
-  console.log(urlID, "urlID");
-  const fullURL = urlDatabase[urlID];
-  console.log(fullURL, "fullURL");
-
+  const fullURL = urlDatabase[urlID].longURL; // Access longURL from the new structure
 
   const templateVars = {
     user: user,
     id: req.params.id,
-    longURL: fullURL };
-
+    longURL: fullURL,
+  };
 
   res.render("urls_show", templateVars);
 });
@@ -146,7 +167,7 @@ app.post('/urls/:id', (req, res) => {
   const shortURL = req.params.id;
   const newLongURL = req.body.longURL;
 
-  urlDatabase[shortURL] = newLongURL; // Update the URL in the database
+  urlDatabase[shortURL].longURL = newLongURL;// Update the URL in the database
 
   res.redirect('/urls'); // Redirect to the list of URLs
 });
@@ -179,7 +200,7 @@ app.post('/login', (req, res) => {
       console.log("User Found:", users[user]);
       userId = users[user].id;
       break;
-    } 
+    }
   }
   if (userId) {
     console.log("Logging in user with ID:", userId);
@@ -219,10 +240,10 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body;
 
   // Check if email already exists
-    for (let userId in users) {
-      if (users[userId].email === email) {
-        return res.status(400).send('Email already in use!');
-      } 
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return res.status(400).send('Email already in use!');
+    }
 
   }
 
@@ -249,12 +270,11 @@ app.post('/register', (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL] && urlDatabase[shortURL].longURL;
 
-  if(!longURL) {
+  if (!longURL) {
     return res.status(404).render("404error", {message: " shortened URL not found"});
 
   }
   res.redirect(longURL);
-})
-
+});

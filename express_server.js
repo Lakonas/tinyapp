@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -29,6 +30,15 @@ function urlsForUser(id) {
 
 function getUserById(userId) {
   return users[userId]; // Retrieve the user object by userId
+}
+
+function getUserByEmail(email) {
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return users[userId];
+    }
+  }
+  return null; // Return null if no user is found with the given email
 }
 
 
@@ -294,12 +304,20 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body;
 
   // Check if email already exists
-  for (let userId in users) {
-    if (users[userId].email === email) {
+  
+  
+  
+  
+  
+  const foundEmail = getUserByEmail(email);
+  
+    if(foundEmail){
       return res.status(400).send('Email already in use!');
     }
+      
+    
 
-  }
+  
 
 
   if (!email || !password) {
@@ -330,5 +348,6 @@ app.get("/u/:id", (req, res) => {
     return res.status(404).render("404error", {message: " shortened URL not found"});
 
   }
+  console.log(`Redirecting short URL: ${shortURL} to long URL: ${longURL}`);
   res.redirect(longURL);
 });

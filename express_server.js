@@ -169,7 +169,7 @@ app.get("/urls/:id", (req, res) => {
     id: urlId,
     longURL: url.longURL,
     user: user // Pass the user object to the view
-   });
+  });
 
 });
 
@@ -209,7 +209,7 @@ app.get("/urls/:id/edit", (req, res) => {
     longURL: url.longURL
   };
 
-  res.render("urls_edit", templateVars); // Render the page to edit the URL
+  res.render("urls_show", templateVars); // Render the page to edit the URL
 });
 
 

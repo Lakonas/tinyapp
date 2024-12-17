@@ -59,12 +59,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "a@a.com",
-    password: "1",
+    password: bcrypt.hashSync('1', 10),
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "b@b.com",
-    password: "2",
+    password: bcrypt.hashSync('2', 10),
   },
 };
 
@@ -259,11 +259,13 @@ app.post('/login', (req, res) => {
   
 
   for (let user in users) {
-    if (users[user].email   === email && users[user].password === password) {
-
-      console.log("User Found:", users[user]);
-      userId = users[user].id;
-      break;
+    if (users[user].email === email) {
+      // Compare the plain-text password with the hashed password
+      if (bcrypt.compareSync(password, users[user].password)) {
+        console.log("User Found:", users[user]);
+        userId = users[user].id;
+        break;
+      }
     }
   }
   if (userId) {
@@ -287,8 +289,8 @@ app.post('/logout', (req, res) => {
 app.get('/register', (req, res) => {
   const userId = req.cookies["user_id"];
   if (userId) {
-    // Redirect logged-in users to /urls
-    return res.redirect("/urls");
+    
+    return res.redirect("/urls"); // Redirect logged-in users to /urls
   }
   
   
@@ -303,35 +305,26 @@ app.post('/register', (req, res) => {
  
   const { email, password } = req.body;
 
-  // Check if email already exists
   
-  
-  
-  
-  
-  const foundEmail = getUserByEmail(email);
+  const foundEmail = getUserByEmail(email);// Check if email already exists
   
     if(foundEmail){
       return res.status(400).send('Email already in use!');
     }
       
-    
-
-  
-
-
   if (!email || !password) {
     return res.status(400).send('Email and password fields cannot be empty');
   }
 
-  // Generate a unique user ID and create a new user
-  const userId = generateRandomString();
-  
-  // Create the user object
-  const user = {
+  const userId = generateRandomString();// Generate a unique user ID and create a new user
+
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+
+  const user = { // Create the user object
     id: userId,
     email: email,
-    password: password
+    password: hash
   };
 
   users[userId] = user;

@@ -83,7 +83,8 @@ app.get("/urls", (req, res) => {
 
   const templateVars = {
     user: user,
-    urls: urlDatabase //change
+    urls: urlDatabase, //change
+    message: null
     
   };
   res.render("urls_index", templateVars);

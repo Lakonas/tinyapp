@@ -24,6 +24,9 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <form method="GET" action="/urls/<%= id %>/edit">
+          <input type="submit" value="Edit" class="btn btn-warning">
+        </form>
         <form method="POST" action="/urls/<%= id %>">
           <div class="form-group">
             <label for="longURL">Update Long URL:</label>

@@ -13,11 +13,37 @@ function generateRandomString(length = 6) {
   return result;
 }
 
+function urlsForUser(id) {
+  const userUrls = {};  // Initialize an empty object to store the user's URLs
+  
+  // Iterate over the urlDatabase
+  for (let shortURL in urlDatabase) {
+    // If the userID matches the given id, include the URL
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+
+  return userUrls;  // Return the filtered URLs
+}
+
+function getUserById(userId) {
+  return users[userId]; // Retrieve the user object by userId
+}
+
+
 //Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.set("view engine", "ejs");
+app.use((req, res, next) => {
+  if (req.cookies["user_id"]) {
+    res.locals.userId = req.cookies["user_id"];  // Store the userId in res.locals for easier access
+  }
+  next();
+});
+
 
 const users = {
   userRandomID: {
@@ -73,13 +99,9 @@ app.get("/urls", (req, res) => {
     return res.render("urls_index", templateVars);
   }
   const user = users[userId];
+  
 
-  const userUrls = {};
-  for (let id in urlDatabase) {
-    if (urlDatabase[id].userID === userId) {
-      userUrls[id] = urlDatabase[id];
-    }
-  }
+  const userUrls = urlsForUser(userId);
 
   const templateVars = {
     user: user,
@@ -126,20 +148,31 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const user = users[userId];
+  const urlId = req.params.id;
 
-  const urlID = req.params.id;
-  const fullURL = urlDatabase[urlID].longURL; // Access longURL from the new structure
+  // Check if user is logged in (by checking the cookies)
+  if (!res.locals.userId) {
+    return res.status(403).render("403error", { message: "You must be logged in to view this URL." });
+  }
 
-  const templateVars = {
-    user: user,
-    id: req.params.id,
-    longURL: fullURL,
-  };
+  const url = urlDatabase[urlId];
 
-  res.render("urls_show", templateVars);
+  // Check if the logged-in user is the owner of the URL
+  if (!url || url.userID !== res.locals.userId) {
+    return res.status(403).render("403error", { message: "You do not have permission to view or edit this URL." });
+  }
+
+  const user = getUserById(res.locals.userId);
+
+  // If user owns the URL, render the page (template)
+  res.render("urls_show", {
+    id: urlId,
+    longURL: url.longURL,
+    user: user // Pass the user object to the view
+   });
+
 });
+
 
 app.post("/urls/:id/delete", (req, res) => {
   console.log(req.params,"req.params");
@@ -148,19 +181,37 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
-app.get("/urls/:id/edit", (req,res) => {
-  const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL];
+app.get("/urls/:id/edit", (req, res) => {
+  const userId = req.cookies["user_id"]; // Get user ID from cookie
+  
+  // Check if the user is logged in
+  if (!userId) {
+    return res.status(403).render("403error", { message: "You must be logged in to edit a URL." });
+  }
 
-  urlDatabase[shortURL] = longURL;
+  const urlID = req.params.id; // Get the short URL ID from the request
+  const url = urlDatabase[urlID]; // Find the URL in the database
+
+  // Check if the URL exists
+  if (!url) {
+    return res.status(404).render("403error", { message: "URL not found." });
+  }
+
+  // Check if the logged-in user owns the URL
+  if (url.userID !== userId) {
+    return res.status(403).render("403error", { message: "You do not have permission to edit this URL." });
+  }
+
+  // If the user is logged in and owns the URL, render the edit page
   const templateVars = {
-    username: req.cookies["username"],
-    shortURL: shortURL,
-    longURL: longURL,
+    user: users[userId],
+    shortURL: urlID,
+    longURL: url.longURL
   };
 
-  res.render('urls_show',templateVars);
+  res.render("urls_edit", templateVars); // Render the page to edit the URL
 });
+
 
 
 
@@ -194,6 +245,8 @@ app.post('/login', (req, res) => {
   const { email, password} = req.body;
   
   let userId = null;
+
+  
 
   for (let user in users) {
     if (users[user].email   === email && users[user].password === password) {

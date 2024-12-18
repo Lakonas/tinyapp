@@ -1,8 +1,8 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
 const app = express();
+const cookieSession = require('cookie-session')
 const PORT = 8080; // default port 8080
 
 function generateRandomString(length = 6) {
@@ -43,13 +43,20 @@ function getUserByEmail(email) {
 
 
 //Middleware
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.set("view engine", "ejs");
+app.use(cookieSession({
+  name: 'session',
+  keys: ['gruelling'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
 app.use((req, res, next) => {
-  if (req.cookies["user_id"]) {
-    res.locals.userId = req.cookies["user_id"];  // Store the userId in res.locals for easier access
+  if (req.session.user_id) {
+    res.locals.userId = req.session.user_id;//req.cookies["user_id"];  // Store the userId in res.locals for easier access
   }
   next();
 });
@@ -70,12 +77,12 @@ const users = {
 
 const urlDatabase = {
   b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
+    longURL: "http://www.lighthouselabs.com",
+    userID: "userRandomID",
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW",
+    userID: "userRandomID",
   },
 };
 
@@ -98,7 +105,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];//change
+  const userId = req.session.user_id;//req.cookies["user_id"];//change
 
   if (!userId) {
     // If no user is logged in, render a message prompting them to log in or register
@@ -124,7 +131,7 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;//req.cookies["user_id"];
 
   if (!userId) {
 
@@ -139,7 +146,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;//req.cookies["user_id"];
 
   if (!userId) {
     return res.send("<html><body>You must be logged in to create a new url. Please log in first.</body></html>");
@@ -192,7 +199,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/urls/:id/edit", (req, res) => {
-  const userId = req.cookies["user_id"]; // Get user ID from cookie
+  const userId =  req.session.user_id;//req.cookies["user_id"]; // Get user ID from cookie
   
   // Check if the user is logged in
   if (!userId) {
@@ -237,7 +244,7 @@ app.post('/urls/:id', (req, res) => {
 
 app.get("/login", (req, res) => {
 
-  const userId = req.cookies["user_id"];
+  const userId = req.session.userId;//req.cookies["user_id"];
   if (userId) {
     // Redirect logged-in users to /urls
     return res.redirect("/urls");
@@ -270,7 +277,8 @@ app.post('/login', (req, res) => {
   }
   if (userId) {
     console.log("Logging in user with ID:", userId);
-    res.cookie('user_id', userId);
+    //res.cookie('user_id', userId);
+    req.session.user_id = userId;
     res.redirect('/urls');
   } else {
     console.log("Invalid credentials.");
@@ -282,12 +290,12 @@ app.post('/login', (req, res) => {
 });
   
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');  // Clear the user_id cookie
+  req.session = null;//res.clearCookie('user_id');  // Clear the user_id cookie
   res.redirect('/login');
 });
 
 app.get('/register', (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id//req.cookies["user_id"];
   if (userId) {
     
     return res.redirect("/urls"); // Redirect logged-in users to /urls
@@ -308,9 +316,9 @@ app.post('/register', (req, res) => {
   
   const foundEmail = getUserByEmail(email);// Check if email already exists
   
-    if(foundEmail){
-      return res.status(400).send('Email already in use!');
-    }
+  if (foundEmail) {
+    return res.status(400).send('Email already in use!');
+  }
       
   if (!email || !password) {
     return res.status(400).send('Email and password fields cannot be empty');
@@ -328,7 +336,8 @@ app.post('/register', (req, res) => {
   };
 
   users[userId] = user;
-  res.cookie("user_id", userId);
+  //res.cookie("user_id", userId);
+  req.session.user_id = userId;
   console.log(users);
   res.redirect('/urls');
 });

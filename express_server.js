@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
+const { getUserByEmail } = require('./helpers');
 const app = express();
 const cookieSession = require('cookie-session')
 const PORT = 8080; // default port 8080
@@ -30,15 +31,6 @@ function urlsForUser(id) {
 
 function getUserById(userId) {
   return users[userId]; // Retrieve the user object by userId
-}
-
-function getUserByEmail(email) {
-  for (let userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
-    }
-  }
-  return null; // Return null if no user is found with the given email
 }
 
 
@@ -314,7 +306,7 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body;
 
   
-  const foundEmail = getUserByEmail(email);// Check if email already exists
+  const foundEmail = getUserByEmail(email,users);// Check if email already exists
   
   if (foundEmail) {
     return res.status(400).send('Email already in use!');

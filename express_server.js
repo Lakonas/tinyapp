@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express");             //Imported 
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
 const { getUserByEmail } = require('./helpers');
@@ -10,17 +10,17 @@ function generateRandomString(length = 6) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars.charAt(Math.floor(Math.random() * chars.length));           //string generator
   }
   return result;
 }
 
-function urlsForUser(id) {
-  const userUrls = {};  // Initialize an empty object to store the user's URLs
+function urlsForUser(id) {          //To return list of urls based on userid                                
+  const userUrls = {};                                                        
   
-  // Iterate over the urlDatabase
+  
   for (let shortURL in urlDatabase) {
-    // If the userID matches the given id, include the URL
+    
     if (urlDatabase[shortURL].userID === id) {
       userUrls[shortURL] = urlDatabase[shortURL];
     }
@@ -48,7 +48,7 @@ app.use(cookieSession({
 
 app.use((req, res, next) => {
   if (req.session.user_id) {
-    res.locals.userId = req.session.user_id;//req.cookies["user_id"];  // Store the userId in res.locals for easier access
+    res.locals.userId = req.session.user_id;  // Store the userId in res.locals for easier access
   }
   next();
 });
@@ -79,8 +79,14 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userId = req.session.user_id;
+
+  if(userId){
+    return res.redirect("/urls")
+
+  }
   
+  res.redirect("/login")
 });
 
 app.listen(PORT, () => {
@@ -98,13 +104,13 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.session.user_id;//req.cookies["user_id"];//change
+  const userId = req.session.user_id;
 
   if (!userId) {
-    // If no user is logged in, render a message prompting them to log in or register
+    
     const templateVars = {
       user: null,
-      message: "You must be logged in to view your URLs. Please log in or register first."
+      message: "You must be logged in to view your URLs. Please log in or register first." // If no user is logged in, render a message prompting them to log in or register
     };
     return res.render("urls_index", templateVars);
   }
@@ -115,7 +121,7 @@ app.get("/urls", (req, res) => {
 
   const templateVars = {
     user: user,
-    urls: urlDatabase, //change
+    urls: userUrls, 
     message: null
     
   };
@@ -124,7 +130,7 @@ app.get("/urls", (req, res) => {
 
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.session.user_id;//req.cookies["user_id"];
+  const userId = req.session.user_id;
 
   if (!userId) {
 
@@ -139,7 +145,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.session.user_id;//req.cookies["user_id"];
+  const userId = req.session.user_id;
 
   if (!userId) {
     return res.send("<html><body>You must be logged in to create a new url. Please log in first.</body></html>");
@@ -148,9 +154,9 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
 
-  // Save the new URL with the associated user ID
+ 
   urlDatabase[shortURL] = {
-    longURL: longURL,
+    longURL: longURL,                // Save the new URL with the associated user ID
     userID: userId, // Associate the URL with the logged-in user
   };
 
@@ -160,25 +166,25 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const urlId = req.params.id;
 
-  // Check if user is logged in (by checking the cookies)
+  
   if (!res.locals.userId) {
-    return res.status(403).render("403error", { message: "You must be logged in to view this URL." });
+    return res.status(403).render("403error", { message: "You must be logged in to view this URL." }); // Check if user is logged in (by checking the cookies)
   }
 
   const url = urlDatabase[urlId];
 
-  // Check if the logged-in user is the owner of the URL
+ 
   if (!url || url.userID !== res.locals.userId) {
-    return res.status(403).render("403error", { message: "You do not have permission to view or edit this URL." });
+    return res.status(403).render("403error", { message: "You do not have permission to view or edit this URL." }); // Check if the logged-in user is the owner of the URL
   }
 
   const user = getUserById(res.locals.userId);
 
-  // If user owns the URL, render the page (template)
-  res.render("urls_show", {
+  
+  res.render("urls_show", {                                                 // If user owns the URL, render the page (template)
     id: urlId,
     longURL: url.longURL,
-    user: user // Pass the user object to the view
+    user: user                                                              // Pass the user object to the view
   });
 
 });
@@ -192,30 +198,30 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/urls/:id/edit", (req, res) => {
-  const userId =  req.session.user_id;//req.cookies["user_id"]; // Get user ID from cookie
+  const userId =  req.session.user_id;// Get user ID from cookie
   
-  // Check if the user is logged in
+  
   if (!userId) {
-    return res.status(403).render("403error", { message: "You must be logged in to edit a URL." });
+    return res.status(403).render("403error", { message: "You must be logged in to edit a URL." });// Check if the user is logged in
   }
 
   const urlID = req.params.id; // Get the short URL ID from the request
   const url = urlDatabase[urlID]; // Find the URL in the database
 
-  // Check if the URL exists
+ 
   if (!url) {
-    return res.status(404).render("403error", { message: "URL not found." });
+    return res.status(404).render("403error", { message: "URL not found." });  // Check if the URL exists
   }
 
-  // Check if the logged-in user owns the URL
+  
   if (url.userID !== userId) {
-    return res.status(403).render("403error", { message: "You do not have permission to edit this URL." });
+    return res.status(403).render("403error", { message: "You do not have permission to edit this URL." }); // Check if the logged-in user owns the URL
   }
 
-  // If the user is logged in and owns the URL, render the edit page
+  
   const templateVars = {
     user: users[userId],
-    shortURL: urlID,
+    shortURL: urlID,                                                                              // If the user is logged in and owns the URL, render the edit page
     longURL: url.longURL
   };
 
@@ -237,7 +243,7 @@ app.post('/urls/:id', (req, res) => {
 
 app.get("/login", (req, res) => {
 
-  const userId = req.session.userId;//req.cookies["user_id"];
+  const userId = req.session.userId;
   if (userId) {
     // Redirect logged-in users to /urls
     return res.redirect("/urls");
@@ -283,12 +289,12 @@ app.post('/login', (req, res) => {
 });
   
 app.post('/logout', (req, res) => {
-  req.session = null;//res.clearCookie('user_id');  // Clear the user_id cookie
+  req.session = null;  // Clear the user_id cookie
   res.redirect('/login');
 });
 
 app.get('/register', (req, res) => {
-  const userId = req.session.user_id//req.cookies["user_id"];
+  const userId = req.session.user_id
   if (userId) {
     
     return res.redirect("/urls"); // Redirect logged-in users to /urls
@@ -329,7 +335,7 @@ app.post('/register', (req, res) => {
   };
 
   users[userId] = user;
-  //res.cookie("user_id", userId);
+  
   req.session.user_id = userId;
   console.log(users);
   res.redirect('/urls');

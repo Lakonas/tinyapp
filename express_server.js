@@ -221,7 +221,7 @@ app.get("/urls/:id/edit", (req, res) => {
   
   const templateVars = {
     user: users[userId],
-    shortURL: urlID,                                                                              // If the user is logged in and owns the URL, render the edit page
+    shortURL: urlID,                                     // If the user is logged in and owns the URL, render the edit page
     longURL: url.longURL
   };
 

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { getUserByEmail, getUserById } = require('./helpers/userHelpers');
 const { urlsForUser, urlExists, userOwnsUrl } = require('./helpers/urlHelpers');
 const { generateRandomString } = require('./helpers/utils');
+const {requireAuth, redirectIfLoggedIn} = require('./middleware/auth');
 const app = express();
 const cookieSession = require('cookie-session')
 const PORT = 8080; // default port 8080
@@ -109,35 +110,24 @@ app.get("/urls", (req, res) => {
 });
 
 
-app.get("/urls/new", (req, res) => {
+app.get("/urls/new", requireAuth, (req, res) => {
   const userId = req.session.user_id;
-
-  if (!userId) {
-
-    return res.redirect("/login");
-  }
-  const user = users[userId]; // Lookup user object using user_id cookie
+  const user = getUserById(userId, users);
 
   const templateVars = {
-    user: user,  //
+    user: user,
   };
-  res.render("urls_new", templateVars);  // Pass it to the view
+  res.render("urls_new", templateVars);
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls", requireAuth, (req, res) => {
   const userId = req.session.user_id;
-
-  if (!userId) {
-    return res.send("<html><body>You must be logged in to create a new url. Please log in first.</body></html>");
-  }
-
   const shortURL = generateRandomString();
   const longURL = req.body.longURL;
 
- 
   urlDatabase[shortURL] = {
-    longURL: longURL,                // Save the new URL with the associated user ID
-    userID: userId, // Associate the URL with the logged-in user
+    longURL: longURL,
+    userID: userId,
   };
 
   res.redirect(`/urls/${shortURL}`);
@@ -170,70 +160,68 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
-app.post("/urls/:id/delete", (req, res) => {
-  console.log(req.params,"req.params");
-  const  id = req.params.id;
+app.post("/urls/:id/delete", requireAuth, (req, res) => {
+  const id = req.params.id;
+  const userId = req.session.user_id;
+  
+  // Check if URL exists and user owns it
+  if (!urlDatabase[id] || urlDatabase[id].userID !== userId) {
+    return res.status(403).render("403error", { 
+      message: "You cannot delete this URL." 
+    });
+  }
+  
   delete urlDatabase[id];
   res.redirect('/urls');
 });
 
-app.get("/urls/:id/edit", (req, res) => {
-  const userId =  req.session.user_id;// Get user ID from cookie
-  
-  
-  if (!userId) {
-    return res.status(403).render("403error", { message: "You must be logged in to edit a URL." });// Check if the user is logged in
-  }
+app.get("/urls/:id/edit", requireAuth, (req, res) => {
+  const userId = req.session.user_id;
+  const urlID = req.params.id;
+  const url = urlDatabase[urlID];
 
-  const urlID = req.params.id; // Get the short URL ID from the request
-  const url = urlDatabase[urlID]; // Find the URL in the database
-
- 
   if (!url) {
-    return res.status(404).render("403error", { message: "URL not found." });  // Check if the URL exists
+    return res.status(404).render("403error", { message: "URL not found." });
   }
 
-  
   if (url.userID !== userId) {
-    return res.status(403).render("403error", { message: "You do not have permission to edit this URL." }); // Check if the logged-in user owns the URL
+    return res.status(403).render("403error", { message: "You do not have permission to edit this URL." });
   }
 
-  
   const templateVars = {
-    user: users[userId],
-    shortURL: urlID,                                     // If the user is logged in and owns the URL, render the edit page
+    user: getUserById(userId, users),
+    shortURL: urlID,
     longURL: url.longURL
   };
 
-  res.render("urls_show", templateVars); // Render the page to edit the URL
+  res.render("urls_show", templateVars);
 });
 
 
 
 
-app.post('/urls/:id', (req, res) => {
+app.post('/urls/:id', requireAuth, (req, res) => {
   const shortURL = req.params.id;
+  const userId = req.session.user_id;
   const newLongURL = req.body.longURL;
 
-  urlDatabase[shortURL].longURL = newLongURL;// Update the URL in the database
+  // Check if URL exists and user owns it
+  if (!urlDatabase[shortURL] || urlDatabase[shortURL].userID !== userId) {
+    return res.status(403).render("403error", { 
+      message: "You cannot edit this URL." 
+    });
+  }
 
-  res.redirect('/urls'); // Redirect to the list of URLs
+  urlDatabase[shortURL].longURL = newLongURL;
+  res.redirect('/urls');
 });
 
 
-app.get("/login", (req, res) => {
-
-  const userId = req.session.userId;
-  if (userId) {
-    // Redirect logged-in users to /urls
-    return res.redirect("/urls");
-  }
+app.get("/login", redirectIfLoggedIn, (req, res) => {
   const templateVars = {
     user: null,
   };
   res.render('login', templateVars);
- 
-  
 });
 
 
@@ -273,19 +261,11 @@ app.post('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-app.get('/register', (req, res) => {
-  const userId = req.session.user_id
-  if (userId) {
-    
-    return res.redirect("/urls"); // Redirect logged-in users to /urls
-  }
-  
-  
+app.get('/register', redirectIfLoggedIn, (req, res) => {
   const templateVars = {
     user: null,
   };
   res.render('register', templateVars);
-  
 });
 
 app.post('/register', (req, res) => {

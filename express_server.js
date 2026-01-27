@@ -1,37 +1,17 @@
 const express = require("express");             //Imported 
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
-const { getUserByEmail } = require('./helpers');
+const { getUserByEmail, getUserById } = require('./helpers/userHelpers');
+const { urlsForUser, urlExists, userOwnsUrl } = require('./helpers/urlHelpers');
+const { generateRandomString } = require('./helpers/utils');
 const app = express();
 const cookieSession = require('cookie-session')
 const PORT = 8080; // default port 8080
 
-function generateRandomString(length = 6) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));           //string generator
-  }
-  return result;
-}
 
-function urlsForUser(id) {          //To return list of urls based on userid                                
-  const userUrls = {};                                                        
-  
-  
-  for (let shortURL in urlDatabase) {
-    
-    if (urlDatabase[shortURL].userID === id) {
-      userUrls[shortURL] = urlDatabase[shortURL];
-    }
-  }
 
-  return userUrls;  // Return the filtered URLs
-}
 
-function getUserById(userId) {
-  return users[userId]; // Retrieve the user object by userId
-}
+
 
 
 //Middleware
@@ -117,7 +97,7 @@ app.get("/urls", (req, res) => {
   const user = users[userId];
   
 
-  const userUrls = urlsForUser(userId);
+  const userUrls = urlsForUser(userId, urlDatabase);
 
   const templateVars = {
     user: user,
@@ -178,7 +158,7 @@ app.get("/urls/:id", (req, res) => {
     return res.status(403).render("403error", { message: "You do not have permission to view or edit this URL." }); // Check if the logged-in user is the owner of the URL
   }
 
-  const user = getUserById(res.locals.userId);
+  const user = getUserById(res.locals.userId, users);
 
   
   res.render("urls_show", {                                                 // If user owns the URL, render the page (template)

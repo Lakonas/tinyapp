@@ -41,7 +41,7 @@ router.post('/', requireAuth, (req, res) => {
 
   req.app.locals.urlDatabase[shortURL] = {
     longURL: longURL,
-    userID: userId,
+    userId: userId,
   };
 
   res.redirect(`/urls/${shortURL}`);
@@ -58,7 +58,7 @@ router.get('/:id', requireAuth, (req, res) => {
 
   const url = req.app.locals.urlDatabase[urlId];
 
-  if (url.userID !== userId) {
+  if (url.userId !== userId) {
     return res.status(403).render('403error', { 
       message: 'You do not have permission to view or edit this URL.' 
     });
@@ -80,7 +80,7 @@ router.post('/:id', requireAuth, (req, res) => {
   const newLongURL = req.body.longURL;
 
   if (!req.app.locals.urlDatabase[shortURL] || 
-      req.app.locals.urlDatabase[shortURL].userID !== userId) {
+    req.app.locals.urlDatabase[shortURL].userId !== userId) {
     return res.status(403).render('403error', { 
       message: 'You cannot edit this URL.' 
     });
@@ -96,7 +96,7 @@ router.post('/:id/delete', requireAuth, (req, res) => {
   const userId = req.session.user_id;
   
   if (!req.app.locals.urlDatabase[id] || 
-      req.app.locals.urlDatabase[id].userID !== userId) {
+    req.app.locals.urlDatabase[id].userId !== userId) {
     return res.status(403).render('403error', { 
       message: 'You cannot delete this URL.' 
     });
@@ -116,7 +116,7 @@ router.get('/:id/edit', requireAuth, (req, res) => {
     return res.status(404).render('403error', { message: 'URL not found.' });
   }
 
-  if (url.userID !== userId) {
+  if (url.userId !== userId) {
     return res.status(403).render('403error', { 
       message: 'You do not have permission to edit this URL.' 
     });

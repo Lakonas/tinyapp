@@ -10,7 +10,7 @@ function urlsForUser(userId, urlDatabase) {
   const userUrls = {};
   
   for (let shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === userId) {
+    if (urlDatabase[shortURL].userId === userId) {
       userUrls[shortURL] = urlDatabase[shortURL];
     }
   }
@@ -37,7 +37,7 @@ function urlExists(shortURL, urlDatabase) {
  */
 function userOwnsUrl(shortURL, userId, urlDatabase) {
   const url = urlDatabase[shortURL];
-  return url && url.userID === userId;
+  return url && url.userId === userId;
 }
 
 module.exports = {

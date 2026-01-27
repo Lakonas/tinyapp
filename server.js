@@ -46,11 +46,11 @@ const users = {
 const urlDatabase = {
   b6UTxQ: {
     longURL: 'http://www.lighthouselabs.com',
-    userID: 'userRandomID',
+    userId: 'userRandomID',
   },
   i3BoGr: {
     longURL: 'https://www.google.ca',
-    userID: 'userRandomID',
+    userId: 'userRandomID',
   },
 };
 

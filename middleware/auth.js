@@ -5,7 +5,7 @@
  * Redirects to login page if user is not logged in
  */
 const requireAuth = (req, res, next) => {
-  if (!req.session.user_id) {
+  if (!req.session.userId) {
     return res.redirect('/login');
   }
   next();
@@ -16,7 +16,7 @@ const requireAuth = (req, res, next) => {
  * Used on login/register pages to redirect to /urls if already logged in
  */
 const redirectIfLoggedIn = (req, res, next) => {
-  if (req.session.user_id) {
+  if (req.session.userId) {
     return res.redirect('/urls');
   }
   next();

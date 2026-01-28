@@ -29,24 +29,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Database (in-memory for now)
-
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: 'http://www.lighthouselabs.com',
-    userId: 'userRandomID',
-  },
-  i3BoGr: {
-    longURL: 'https://www.google.ca',
-    userId: 'userRandomID',
-  },
-};
-
-// Make databases available to routes via app.locals
-
-app.locals.urlDatabase = urlDatabase;
-
 // Routes
 app.get('/', (req, res) => {
   const userId = req.session.user_id;
@@ -63,17 +45,24 @@ app.use('/', authRoutes);
 app.use('/urls', urlRoutes);
 
 // Redirect route (short URL to long URL)
-app.get('/u/:id', (req, res) => {
-  const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL] && urlDatabase[shortURL].longURL;
-
-  if (!longURL) {
-    return res.status(404).render('404error', { message: 'Shortened URL not found' });
-  }
+// Redirect route (short URL to long URL)
+app.get('/u/:id', async (req, res) => {
+  const shortCode = req.params.id;
   
-  res.redirect(longURL);
+  try {
+    const Url = require('./models/Url');
+    const url = await Url.findByShortCode(shortCode);
+    
+    if (!url) {
+      return res.status(404).render('404error', { message: 'Shortened URL not found' });
+    }
+    
+    res.redirect(url.long_url);
+  } catch (err) {
+    console.error('Redirect error:', err);
+    res.status(500).send('Server error');
+  }
 });
-
 // Start server
 app.listen(PORT, () => {
   console.log(`TinyApp server listening on port ${PORT}!`);

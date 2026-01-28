@@ -30,18 +30,7 @@ app.use((req, res, next) => {
 });
 
 // Database (in-memory for now)
-const users = {
-  userRandomID: {
-    id: 'userRandomID',
-    email: 'a@a.com',
-    password: bcrypt.hashSync('1', 10),
-  },
-  user2RandomID: {
-    id: 'user2RandomID',
-    email: 'b@b.com',
-    password: bcrypt.hashSync('2', 10),
-  },
-};
+
 
 const urlDatabase = {
   b6UTxQ: {
@@ -55,7 +44,7 @@ const urlDatabase = {
 };
 
 // Make databases available to routes via app.locals
-app.locals.users = users;
+
 app.locals.urlDatabase = urlDatabase;
 
 // Routes

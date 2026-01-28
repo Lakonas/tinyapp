@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const { getUserByEmail } = require('../helpers/userHelpers');
+const User = require('../models/User');
 const { generateRandomString } = require('../helpers/utils');
 const { redirectIfLoggedIn } = require('../middleware/auth');
 
@@ -15,25 +15,32 @@ router.get('/login', redirectIfLoggedIn, (req, res) => {
 });
 
 // POST /login - Handle login
-router.post('/login', (req, res) => {
+// POST /login - Handle login
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   
-  let userId = null;
-
-  for (let user in req.app.locals.users) {
-    if (req.app.locals.users[user].email === email) {
-      if (bcrypt.compareSync(password, req.app.locals.users[user].password)) {
-        userId = req.app.locals.users[user].id;
-        break;
-      }
+  try {
+    // Find user in database
+    const user = await User.findByEmail(email);
+    
+    if (!user) {
+      return res.status(400).send('Invalid email or password');
     }
-  }
-  
-  if (userId) {
-    req.session.user_id = userId;
+    
+    // Check password
+    const passwordMatch = bcrypt.compareSync(password, user.password_hash);
+    
+    if (!passwordMatch) {
+      return res.status(400).send('Invalid email or password');
+    }
+    
+    // Login successful
+    req.session.userId = user.id;
     res.redirect('/urls');
-  } else {
-    res.send('Invalid email or password');
+    
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).send('Server error');
   }
 });
 
@@ -46,33 +53,37 @@ router.get('/register', redirectIfLoggedIn, (req, res) => {
 });
 
 // POST /register - Handle registration
-router.post('/register', (req, res) => {
+// POST /register - Handle registration
+router.post('/register', async (req, res) => {
   const { email, password } = req.body;
-
-  const foundEmail = getUserByEmail(email, req.app.locals.users);
   
-  if (foundEmail) {
-    return res.status(400).send('Email already in use!');
-  }
-      
+  // Validate input
   if (!email || !password) {
     return res.status(400).send('Email and password fields cannot be empty');
   }
-
-  const userId = generateRandomString();
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
-
-  const user = {
-    id: userId,
-    email: email,
-    password: hash
-  };
-
-  req.app.locals.users[userId] = user;
-  req.session.user_id = userId;
   
-  res.redirect('/urls');
+  try {
+    // Check if email already exists
+    const existingUser = await User.findByEmail(email);
+    
+    if (existingUser) {
+      return res.status(400).send('Email already in use!');
+    }
+    
+    // Create new user
+    const userId = generateRandomString();
+    const passwordHash = bcrypt.hashSync(password, 10);
+    
+    const newUser = await User.create(userId, email, passwordHash);
+    
+    // Login the new user
+    req.session.userId = newUser.id;
+    res.redirect('/urls');
+    
+  } catch (err) {
+    console.error('Registration error:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 // POST /logout - Handle logout

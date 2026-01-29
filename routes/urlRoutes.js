@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Url = require('../models/Url');
 const { generateRandomString } = require('../helpers/utils');
 const { requireAuth } = require('../middleware/auth');
+const QRCode = require('qrcode');
 
 // GET /urls - Show all URLs for logged-in user
 router.get('/', requireAuth, async (req, res) => {
@@ -177,5 +178,38 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// GET /urls/:id/qr - Generate QR code for short URL
+router.get('/:id/qr', async (req, res) => {
+  const shortCode = req.params.id;
+  
+  try {
+    // Find URL in database
+    const url = await Url.findByShortCode(shortCode);
+    
+    if (!url) {
+      return res.status(404).send('URL not found');
+    }
+    
+    // Build the full short URL
+    const shortURL = `http://localhost:8080/u/${shortCode}`;
+    
+    // Generate QR code as PNG buffer
+    const qrCodeBuffer = await QRCode.toBuffer(shortURL, {
+      width: 300,
+      margin: 2
+    });
+    
+    // Set content type and send image
+    res.type('image/png');
+    res.send(qrCodeBuffer);
+    
+  } catch (err) {
+    console.error('Error generating QR code:', err);
+    res.status(500).send('Error generating QR code');
+  }
+});
+
+module.exports = router;
 
 module.exports = router;

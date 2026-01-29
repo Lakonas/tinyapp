@@ -42,6 +42,20 @@
     <button type="submit" class="btn btn-primary">Update URL</button>
   </form>
     </div>
+    <div class="card text-center mt-4">
+      <div class="card-header">
+        <h5>QR Code</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Scan this QR code to access your short URL:</p>
+        <img src="/urls/<%= id %>/qr" alt="QR Code for <%= id %>" class="img-fluid" style="max-width: 300px;">
+        <br><br>
+        <a href="/urls/<%= id %>/qr" download="qrcode-<%= id %>.png" class="btn btn-primary">
+          Download QR Code
+        </a>
+      </div>
+      <div class="card-footer text-muted"></div>
+    </div>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

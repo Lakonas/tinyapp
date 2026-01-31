@@ -63,6 +63,14 @@ app.get('/u/:id', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// 404 handler - must be AFTER all other routes
+app.use((req, res) => {
+  res.status(404).render('404error', { 
+    message: '404 - Page Not Found',
+    user: null
+  });
+});
 // Start server
 app.listen(PORT, () => {
   console.log(`TinyApp server listening on port ${PORT}!`);

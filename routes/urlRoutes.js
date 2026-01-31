@@ -58,10 +58,19 @@ router.get('/new', requireAuth, async (req, res) => {
 // POST /urls - Create new short URL
 router.post('/', requireAuth, async (req, res) => {
   const userId = req.session.userId;
-  const shortCode = generateRandomString();
   const longUrl = req.body.longURL;
   
+  // Validation
+  if (!longUrl) {
+    return res.status(400).send('URL is required');
+  }
+  
+  if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
+    return res.status(400).send('URL must start with http:// or https://');
+  }
+  
   try {
+    const shortCode = generateRandomString();
     await Url.create(shortCode, longUrl, userId);
     res.redirect(`/urls/${shortCode}`);
   } catch (err) {
@@ -107,13 +116,20 @@ router.post('/:id', requireAuth, async (req, res) => {
   const userId = req.session.userId;
   const newLongUrl = req.body.longURL;
   
+  // Validation
+  if (!newLongUrl) {
+    return res.status(400).send('URL is required');
+  }
+  
+  if (!newLongUrl.startsWith('http://') && !newLongUrl.startsWith('https://')) {
+    return res.status(400).send('URL must start with http:// or https://');
+  }
+  
   try {
     const url = await Url.findByShortCode(shortCode);
     
     if (!url || url.user_id !== userId) {
-      return res.status(403).render('403error', { 
-        message: 'You cannot edit this URL.' 
-      });
+      return res.status(403).send('Not authorized');
     }
     
     await Url.update(shortCode, newLongUrl);

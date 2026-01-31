@@ -58,15 +58,16 @@ router.get('/new', requireAuth, async (req, res) => {
 // POST /urls - Create new short URL
 router.post('/', requireAuth, async (req, res) => {
   const userId = req.session.userId;
-  const longUrl = req.body.longURL;
+  let longUrl = req.body.longURL;
   
   // Validation
   if (!longUrl) {
     return res.status(400).send('URL is required');
   }
   
+  // Auto-fix: add https:// if missing protocol
   if (!longUrl.startsWith('http://') && !longUrl.startsWith('https://')) {
-    return res.status(400).send('URL must start with http:// or https://');
+    longUrl = 'https://' + longUrl;
   }
   
   try {
@@ -114,15 +115,16 @@ router.get('/:id', requireAuth, async (req, res) => {
 router.post('/:id', requireAuth, async (req, res) => {
   const shortCode = req.params.id;
   const userId = req.session.userId;
-  const newLongUrl = req.body.longURL;
+  let newLongUrl = req.body.longURL;
   
   // Validation
   if (!newLongUrl) {
     return res.status(400).send('URL is required');
   }
   
+  // Auto-fix: add https:// if missing protocol
   if (!newLongUrl.startsWith('http://') && !newLongUrl.startsWith('https://')) {
-    return res.status(400).send('URL must start with http:// or https://');
+    newLongUrl = 'https://' + newLongUrl;
   }
   
   try {

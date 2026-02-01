@@ -47,7 +47,8 @@
                 </td>
                 <td><%= urls[id].longURL %></td>
                 <td>
-                  <form method="POST" action="/urls/<%= id %>/delete" style="display: inline;">
+                  <form method="POST" action="/urls/<%= id %>" style="display: inline;">
+                    <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                   </form>
                   <button 
@@ -77,6 +78,7 @@
           <div class="modal-body">
             <!-- Edit Form -->
             <form id="editForm" method="POST" action="">
+              <input type="hidden" name="_method" value="PUT">
               <div class="form-group">
                 <label for="modalShortCode">Short URL ID:</label>
                 <input 

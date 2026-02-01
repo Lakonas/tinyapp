@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
+const methodOverride = require('method-override');
 
 const app = express();
 const PORT = 8080;
@@ -12,26 +13,34 @@ const authRoutes = require('./routes/authRoutes');
 const urlRoutes = require('./routes/urlRoutes');
 
 // Middleware
+app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-app.set('view engine', 'ejs');
 app.use(cookieSession({
   name: 'session',
   keys: ['gruelling'],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000
+}));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    const method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
 }));
 
 // Make res.locals.userId available to all routes
 app.use((req, res, next) => {
-  if (req.session.user_id) {
-    res.locals.userId = req.session.user_id;
+  if (req.session.userId) {
+    res.locals.userId = req.session.userId;
   }
   next();
 });
 
 // Routes
 app.get('/', (req, res) => {
-  const userId = req.session.user_id;
+  const userId = req.session.userId;
 
   if (userId) {
     return res.redirect('/urls');
@@ -44,7 +53,6 @@ app.get('/', (req, res) => {
 app.use('/', authRoutes);
 app.use('/urls', urlRoutes);
 
-// Redirect route (short URL to long URL)
 // Redirect route (short URL to long URL)
 app.get('/u/:id', async (req, res) => {
   const shortCode = req.params.id;
@@ -71,6 +79,7 @@ app.use((req, res) => {
     user: null
   });
 });
+
 // Start server
 app.listen(PORT, () => {
   console.log(`TinyApp server listening on port ${PORT}!`);

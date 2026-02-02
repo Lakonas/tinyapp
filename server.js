@@ -59,11 +59,17 @@ app.get('/u/:id', async (req, res) => {
   
   try {
     const Url = require('./models/Url');
+    const Click = require('./models/Click');
+    
     const url = await Url.findByShortCode(shortCode);
     
     if (!url) {
       return res.status(404).render('404error', { message: 'Shortened URL not found' });
     }
+    
+    // Log the click (IP and user agent disabled for demo/privacy)
+    // In production: await Click.create(url.id, req.ip, req.get('user-agent'));
+    await Click.create(shortCode, null, null);
     
     res.redirect(url.long_url);
   } catch (err) {

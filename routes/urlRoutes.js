@@ -14,15 +14,18 @@ router.get('/', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(userId);
     const urlsFromDb = await Url.findByUserId(userId);
+    const Click = require('../models/Click');
     
-    // Transform database format to template format
+    // Transform database format to template format and add click counts
     const urls = {};
-    urlsFromDb.forEach(url => {
+    for (const url of urlsFromDb) {
+      const clickCount = await Click.countByShortCode(url.short_code);
       urls[url.short_code] = {
         longURL: url.long_url,
-        userId: url.user_id
+        userId: url.user_id,
+        clicks: clickCount
       };
-    });
+    }
     
     const templateVars = {
       user: user,
@@ -79,7 +82,55 @@ router.post('/', requireAuth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
+router.get('/:id/analytics', requireAuth, async (req, res) => {
+  const shortCode = req.params.id;
+  const userId = req.session.userId;
+  
+  try {
+    const Click = require('../models/Click');
+    
+    // Get URL details
+    const url = await Url.findByShortCode(shortCode);
+    
+    if (!url) {
+      return res.status(404).send('URL not found');
+    }
+    
+    if (url.user_id !== userId) {
+      return res.status(403).send('Not authorized');
+    }
+    
+    // Get analytics data
+    const totalClicks = await Click.countByShortCode(shortCode);
+    const uniqueVisitors = await Click.countUniqueVisitors(shortCode);
+    const recentClicks = await Click.getRecentClicks(shortCode, 10);
+    const clicksByDate = await Click.getClicksByDate(shortCode, 7);
+    
+    // Prepare chart data (last 7 days)
+    const chartLabels = clicksByDate.map(c => {
+      const date = new Date(c.date);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+    const chartData = clicksByDate.map(c => parseInt(c.count));
+    
+    // Get user info
+    const user = await User.findById(userId);
+    
+    res.render('urls_analytics', {
+      user: user,
+      shortCode: shortCode,
+      longURL: url.long_url,
+      totalClicks: totalClicks,
+      uniqueVisitors: uniqueVisitors,
+      recentClicks: recentClicks,
+      chartLabels: JSON.stringify(chartLabels),
+      chartData: JSON.stringify(chartData)
+    });
+  } catch (err) {
+    console.error('Error loading analytics:', err);
+    res.status(500).send('Server error');
+  }
+});
 // GET /urls/:id - Show single URL details
 router.get('/:id', requireAuth, async (req, res) => {
   const shortCode = req.params.id;
@@ -230,5 +281,9 @@ router.get('/:id/qr', async (req, res) => {
   }
 });
 
+// GET /urls/:id/analytics - Show analytics for a URL
+
+
+module.exports = router;
 module.exports = router;
 

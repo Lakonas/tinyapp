@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
+    />
+    <title>Analytics - <%= shortCode %></title>
+  </head>
+  <body>
+    <%- include('partials/_header') %>
+
+    <main style="margin: 1em;">
+      <div class="mb-4">
+        <a href="/urls" class="btn btn-secondary btn-sm">← Back to URLs</a>
+      </div>
+
+      <h3>Analytics for: <%= shortCode %></h3>
+      <p class="text-muted">Destination: <%= longURL %></p>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted">Total Clicks</h5>
+              <h2 class="card-text"><%= totalClicks %></h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted">Unique Visitors</h5>
+              <h2 class="card-text"><%= uniqueVisitors %></h2>
+              <% if (uniqueVisitors === 0) { %>
+                <small class="text-muted">IP tracking disabled in demo</small>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted">Last 7 Days</h5>
+              <h2 class="card-text"><%= chartData ? JSON.parse(chartData).reduce((a, b) => a + b, 0) : 0 %></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Clicks Over Time (Last 7 Days)</h5>
+        </div>
+        <div class="card-body">
+          <% if (totalClicks === 0) { %>
+            <div class="text-center text-muted py-5">
+              <h5>No clicks yet!</h5>
+              <p>Share your short URL to start tracking clicks.</p>
+              <p><strong>http://localhost:8080/u/<%= shortCode %></strong></p>
+            </div>
+          <% } else { %>
+            <canvas id="clicksChart" width="400" height="100"></canvas>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Recent Clicks -->
+      <div class="card">
+        <div class="card-header">
+          <h5>Recent Clicks</h5>
+        </div>
+        <div class="card-body">
+          <% if (recentClicks.length === 0) { %>
+            <p class="text-muted">No clicks yet.</p>
+          <% } else { %>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentClicks.forEach(click => { %>
+                  <tr>
+                    <td><%= new Date(click.clicked_at).toLocaleString() %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          <% } %>
+        </div>
+      </div>
+    </main>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <% if (totalClicks > 0) { %>
+    <script>
+      const ctx = document.getElementById('clicksChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: <%- chartLabels %>,
+          datasets: [{
+            label: 'Clicks',
+            data: <%- chartData %>,
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    </script>
+    <% } %>
+  </body>
+</html>

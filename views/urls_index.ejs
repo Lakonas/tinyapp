@@ -30,6 +30,7 @@
             <tr>
               <th scope="col">Short URL ID</th>
               <th scope="col">Long URL</th>
+              <th scope="col">Clicks</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -46,6 +47,7 @@
                   </button>
                 </td>
                 <td><%= urls[id].longURL %></td>
+                <td><strong><%= urls[id].clicks %></strong></td>
                 <td>
                   <form method="POST" action="/urls/<%= id %>" style="display: inline;">
                     <input type="hidden" name="_method" value="DELETE">
@@ -57,6 +59,9 @@
                     Quick Edit
                   </button>
                   <a href="/urls/<%= id %>" class="btn btn-secondary btn-sm">Details</a>
+                  <a href="/urls/<%= id %>/analytics" class="btn btn-info btn-sm">📊 Analytics</a>
+                </td>
+
                 </td>
               </tr>
             <% } %>

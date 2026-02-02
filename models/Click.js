@@ -107,5 +107,6 @@ class Click {
       throw err;
     }
   }}
+  
 
 module.exports = Click;

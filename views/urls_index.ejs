@@ -3,15 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
-    <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-      crossorigin="anonymous"
-    />
-    <title>TinyApp</title>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/styles/style.css" />
+    
+    <title>ShortStop - My URLs</title>
   </head>
   <body>
     <%- include('partials/_header') %>
@@ -70,123 +66,146 @@
       <% } %>
     </main>
 
-    <!-- Edit Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Edit URL</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              <span>&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <!-- Edit Form -->
-            <form id="editForm" method="POST" action="">
-              <input type="hidden" name="_method" value="PUT">
-              <div class="form-group">
-                <label for="modalShortCode">Short URL ID:</label>
-                <input 
-                  type="text" 
-                  id="modalShortCode" 
-                  class="form-control" 
-                  readonly 
-                  style="background-color: #e9ecef;">
-              </div>
-              <div class="form-group">
-                <label for="modalLongURL">Long URL:</label>
-                <input 
-                  type="text" 
-                  id="modalLongURL" 
-                  name="longURL" 
-                  class="form-control" 
-                  required>
-              </div>
-            </form>
-
-            <!-- QR Code Section -->
-            <div class="text-center mt-4">
-              <h6>QR Code</h6>
-              <img 
-                id="modalQRCode" 
-                src="" 
-                alt="QR Code" 
-                class="img-fluid" 
-                style="max-width: 250px; border: 1px solid #ddd; padding: 10px;">
-              <br>
-              <a 
-                id="modalQRDownload" 
-                href="" 
-                download="" 
-                class="btn btn-sm btn-info mt-2">
-                Download QR Code
-              </a>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="submitEdit()">Update URL</button>
-          </div>
+    <!-- Edit Modal (Vanilla JS) -->
+<div id="editModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h5 class="modal-title">Edit URL</h5>
+      <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <!-- Edit Form -->
+      <form id="editForm" method="POST" action="">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="form-group">
+          <label for="modalShortCode">Short URL ID:</label>
+          <input 
+              type="text" 
+              id="modalShortCode" 
+              class="form-control modal-readonly" 
+              readonly>
         </div>
+        <div class="form-group">
+          <label for="modalLongURL">Long URL:</label>
+          <input 
+            type="text" 
+            id="modalLongURL" 
+            name="longURL" 
+            class="form-control" 
+            required>
+        </div>
+      </form>
+
+      <!-- QR Code Section -->
+      <div class="text-center mt-4">
+        <h6>QR Code</h6>
+        <img 
+            id="modalQRCode" 
+            src="" 
+            alt="QR Code" 
+            class="img-fluid modal-qr-image">
+        <br>
+        <a 
+          id="modalQRDownload" 
+          href="" 
+          download="" 
+          class="btn btn-info btn-sm mt-4">
+          Download QR Code
+        </a>
       </div>
     </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="submitEdit()">Update URL</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
+   
     <!-- Modal JavaScript -->
-    <script>
-      function openEditModal(shortCode, longURL) {
-        // Set form action
-        document.getElementById('editForm').action = '/urls/' + shortCode;
-        
-        // Populate form fields
-        document.getElementById('modalShortCode').value = shortCode;
-        document.getElementById('modalLongURL').value = longURL;
-        
-        // Set QR code image
-        document.getElementById('modalQRCode').src = '/urls/' + shortCode + '/qr';
-        
-        // Set QR download link
-        const downloadLink = document.getElementById('modalQRDownload');
-        downloadLink.href = '/urls/' + shortCode + '/qr';
-        downloadLink.download = 'qrcode-' + shortCode + '.png';
-        
-        // Show modal
-        $('#editModal').modal('show');
-      }
+   <!-- Modal JavaScript (Vanilla JS) -->
+<script>
+  function openEditModal(shortCode, longURL) {
+    // Set form action
+    document.getElementById('editForm').action = '/urls/' + shortCode;
+    
+    // Populate form fields
+    document.getElementById('modalShortCode').value = shortCode;
+    document.getElementById('modalLongURL').value = longURL;
+    
+    // Set QR code image
+    document.getElementById('modalQRCode').src = '/urls/' + shortCode + '/qr';
+    
+    // Set QR download link
+    const downloadLink = document.getElementById('modalQRDownload');
+    downloadLink.href = '/urls/' + shortCode + '/qr';
+    downloadLink.download = 'qrcode-' + shortCode + '.png';
+    
+    // Show modal (vanilla JS)
+    document.getElementById('editModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
+  }
 
-      function submitEdit() {
-        // Submit the form
-        document.getElementById('editForm').submit();
-      }
+  function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Re-enable scroll
+  }
 
-      // Copy short URL to clipboard
-      function copyShortURL(shortCode) {
-        const shortURL = 'http://localhost:8080/u/' + shortCode;
-        
-        // Modern clipboard API
-        navigator.clipboard.writeText(shortURL).then(function() {
-          // Success - show temporary feedback
-          const button = event.target;
-          const originalText = button.innerHTML;
-          button.innerHTML = '✅ Copied!';
-          button.classList.remove('btn-outline-secondary');
-          button.classList.add('btn-success');
-          
-          // Reset after 2 seconds
-          setTimeout(function() {
-            button.innerHTML = originalText;
-            button.classList.remove('btn-success');
-            button.classList.add('btn-outline-secondary');
-          }, 2000);
-        }).catch(function(err) {
-          // Fallback for older browsers
-          alert('Short URL: ' + shortURL);
-        });
+  function submitEdit() {
+    // Validate before submitting
+    const longURL = document.getElementById('modalLongURL').value;
+    
+    if (!longURL || longURL.trim() === '') {
+      alert('⚠️ URL is required!');
+      return;
+    }
+    
+    // Submit the form
+    document.getElementById('editForm').submit();
+  }
+
+  // Copy short URL to clipboard
+  function copyShortURL(shortCode) {
+    const shortURL = 'http://localhost:8080/u/' + shortCode;
+    
+    // Modern clipboard API
+    navigator.clipboard.writeText(shortURL).then(function() {
+      // Success - show temporary feedback
+      const button = event.target;
+      const originalText = button.innerHTML;
+      button.innerHTML = '✅ Copied!';
+      button.classList.remove('btn-outline-secondary');
+      button.classList.add('btn-success');
+      
+      // Reset after 2 seconds
+      setTimeout(function() {
+        button.innerHTML = originalText;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+      }, 2000);
+    }).catch(function(err) {
+      // Fallback for older browsers
+      alert('Short URL: ' + shortURL);
+    });
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    const modal = document.getElementById('editModal');
+    if (event.target === modal) {
+      closeEditModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('editModal');
+      if (modal.style.display === 'flex') {
+        closeEditModal();
       }
-    </script>
+    }
+  });
+</script>
   </body>
 </html>

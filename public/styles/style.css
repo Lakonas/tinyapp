@@ -182,6 +182,19 @@ h3, h5 {
   vertical-align: middle;
 }
 
+/* First column - short URL and copy button */
+.table tbody tr td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 60px;
+}
+
+.table tbody tr td:first-child a {
+  min-width: 80px;
+  display: inline-block;
+}
+
 .table td a {
   color: var(--electric-green);
   text-decoration: none;

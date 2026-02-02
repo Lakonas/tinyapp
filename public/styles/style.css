@@ -1,16 +1,16 @@
-/* ShortStop - Modern Athletics Theme */
+/* ShortStop - Professional Sports Theme */
 
 /* CSS Variables */
 :root {
-  --primary-blue: #4361EE;
-  --deep-purple: #3A0CA3;
-  --hot-pink: #F72585;
-  --electric-green: #06FFA5;
-  --dark-bg: #1a1a2e;
-  --darker-bg: #16172a;
-  --card-bg: #252538;
+  --forest-green: #2B9348;
+  --teal: #007F5F;
+  --gold: #FFB703;
+  --success-green: #52B788;
+  --dark-bg: #0d1b2a;
+  --darker-bg: #1b263b;
+  --card-bg: #1e3a4d;
   --white: #ffffff;
-  --gray-text: #a0a0a0;
+  --gray-text: #a8a8a8;
   --spacing: 1rem;
 }
 
@@ -31,9 +31,9 @@ body {
 
 /* Navbar */
 .navbar {
-  background: linear-gradient(90deg, var(--primary-blue) 0%, var(--deep-purple) 100%);
+  background: linear-gradient(90deg, var(--forest-green) 0%, var(--teal) 100%);
   padding: 1rem 2rem;
-  box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
+  box-shadow: 0 4px 20px rgba(43, 147, 72, 0.3);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -43,13 +43,13 @@ body {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--white) !important;
-  text-shadow: 0 0 20px var(--electric-green);
+  text-shadow: 0 0 20px var(--gold);
   letter-spacing: 1px;
   transition: all 0.3s ease;
 }
 
 .navbar-brand:hover {
-  text-shadow: 0 0 30px var(--electric-green), 0 0 40px var(--electric-green);
+  text-shadow: 0 0 30px var(--gold), 0 0 40px var(--gold);
   transform: translateY(-2px);
 }
 
@@ -62,7 +62,7 @@ body {
 }
 
 .nav-link:hover {
-  color: var(--hot-pink) !important;
+  color: var(--gold) !important;
 }
 
 .nav-link::after {
@@ -72,7 +72,7 @@ body {
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--hot-pink);
+  background: var(--gold);
   transition: width 0.3s ease;
 }
 
@@ -93,7 +93,7 @@ main {
 }
 
 h3, h5 {
-  background: linear-gradient(90deg, var(--primary-blue), var(--hot-pink));
+  background: linear-gradient(90deg, var(--forest-green), var(--teal));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -104,7 +104,7 @@ h3, h5 {
 /* Cards */
 .card {
   background: var(--card-bg);
-  border: 1px solid rgba(67, 97, 238, 0.2);
+  border: 1px solid rgba(43, 147, 72, 0.2);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
@@ -113,12 +113,12 @@ h3, h5 {
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(67, 97, 238, 0.4), 0 0 20px rgba(247, 37, 133, 0.2);
-  border-color: var(--primary-blue);
+  box-shadow: 0 12px 40px rgba(43, 147, 72, 0.4), 0 0 20px rgba(0, 127, 95, 0.2);
+  border-color: var(--forest-green);
 }
 
 .card-header {
-  background: linear-gradient(90deg, var(--primary-blue), var(--deep-purple));
+  background: linear-gradient(90deg, var(--forest-green), var(--teal));
   border: none;
   padding: 1rem 1.5rem;
   font-weight: 600;
@@ -138,7 +138,7 @@ h3, h5 {
 .card-text {
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--electric-green), var(--primary-blue));
+  background: linear-gradient(135deg, var(--gold), var(--forest-green));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -153,7 +153,7 @@ h3, h5 {
 }
 
 .table thead {
-  background: linear-gradient(90deg, var(--primary-blue), var(--deep-purple));
+  background: linear-gradient(90deg, var(--forest-green), var(--teal));
 }
 
 .table thead th {
@@ -172,7 +172,7 @@ h3, h5 {
 }
 
 .table tbody tr:hover {
-  background: rgba(67, 97, 238, 0.1);
+  background: rgba(43, 147, 72, 0.1);
   transform: scale(1.01);
 }
 
@@ -196,19 +196,19 @@ h3, h5 {
 }
 
 .table td a {
-  color: var(--electric-green);
+  color: var(--gold);
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .table td a:hover {
-  color: var(--hot-pink);
-  text-shadow: 0 0 10px var(--hot-pink);
+  color: var(--teal);
+  text-shadow: 0 0 10px var(--teal);
 }
 
 .table td strong {
-  color: var(--electric-green);
+  color: var(--gold);
   font-size: 1.2rem;
 }
 
@@ -246,24 +246,24 @@ h3, h5 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-blue), var(--deep-purple));
+  background: linear-gradient(135deg, var(--forest-green), var(--teal));
   color: var(--white);
-  box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+  box-shadow: 0 4px 15px rgba(43, 147, 72, 0.4);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 25px rgba(67, 97, 238, 0.6);
+  box-shadow: 0 6px 25px rgba(43, 147, 72, 0.6);
   transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: var(--hot-pink);
+  background: #dc2626;
   color: var(--white);
-  box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
 }
 
 .btn-danger:hover {
-  box-shadow: 0 6px 25px rgba(247, 37, 133, 0.6);
+  box-shadow: 0 6px 25px rgba(220, 38, 38, 0.6);
   transform: translateY(-2px);
 }
 
@@ -275,18 +275,30 @@ h3, h5 {
 
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-color: var(--primary-blue);
+  border-color: var(--forest-green);
 }
 
 .btn-info {
-  background: var(--electric-green);
-  color: var(--dark-bg);
-  box-shadow: 0 4px 15px rgba(6, 255, 165, 0.4);
+  background: var(--teal);
+  color: var(--gold) !important;  /* Gold text normally */
+  box-shadow: 0 4px 15px rgba(0, 127, 95, 0.4);
+  position: relative;
+}
+
+.btn-info::before {
+  content: none;
 }
 
 .btn-info:hover {
-  box-shadow: 0 6px 25px rgba(6, 255, 165, 0.6);
+  background: #009970;
+  color: var(--white) !important;  /* White on hover */
+  box-shadow: 0 6px 25px rgba(0, 127, 95, 0.6);
   transform: translateY(-2px);
+}
+
+.btn-info * {
+  position: relative;
+  z-index: 1;
 }
 
 .btn-outline-secondary {
@@ -297,12 +309,12 @@ h3, h5 {
 
 .btn-outline-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
-  border-color: var(--electric-green);
-  color: var(--electric-green);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .btn-success {
-  background: var(--electric-green);
+  background: var(--success-green);
   color: var(--dark-bg);
 }
 
@@ -330,8 +342,8 @@ h3, h5 {
 
 .form-control:focus {
   background: rgba(255, 255, 255, 0.08);
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  border-color: var(--forest-green);
+  box-shadow: 0 0 0 3px rgba(43, 147, 72, 0.2);
   color: var(--white);
   outline: none;
 }
@@ -361,12 +373,12 @@ h3, h5 {
 /* Modal */
 .modal-content {
   background: var(--card-bg);
-  border: 1px solid rgba(67, 97, 238, 0.3);
+  border: 1px solid rgba(43, 147, 72, 0.3);
   border-radius: 12px;
 }
 
 .modal-header {
-  background: linear-gradient(90deg, var(--primary-blue), var(--deep-purple));
+  background: linear-gradient(90deg, var(--forest-green), var(--teal));
   border-bottom: none;
   border-radius: 12px 12px 0 0;
 }
@@ -390,7 +402,7 @@ h3, h5 {
 }
 
 .close:hover {
-  color: var(--hot-pink);
+  color: var(--gold);
 }
 
 /* Stats Row */
@@ -436,13 +448,13 @@ h3, h5 {
 
 /* Links */
 a {
-  color: var(--electric-green);
+  color: var(--gold);
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
 a:hover {
-  color: var(--hot-pink);
+  color: var(--teal);
   text-decoration: none;
 }
 
@@ -453,10 +465,10 @@ a:hover {
 
 @keyframes glow {
   0%, 100% {
-    text-shadow: 0 0 5px var(--electric-green), 0 0 10px var(--electric-green);
+    text-shadow: 0 0 5px var(--gold), 0 0 10px var(--gold);
   }
   50% {
-    text-shadow: 0 0 10px var(--electric-green), 0 0 20px var(--electric-green), 0 0 30px var(--electric-green);
+    text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold), 0 0 30px var(--gold);
   }
 }
 
@@ -484,7 +496,7 @@ a:hover {
 /* Modal QR Image */
 .modal-qr-image {
   max-width: 250px;
-  border: 1px solid rgba(67, 97, 238, 0.3);
+  border: 1px solid rgba(43, 147, 72, 0.3);
   padding: 10px;
   border-radius: 8px;
 }
@@ -516,7 +528,7 @@ a:hover {
 
 .modal-container {
   background: var(--card-bg);
-  border: 1px solid rgba(67, 97, 238, 0.3);
+  border: 1px solid rgba(43, 147, 72, 0.3);
   border-radius: 12px;
   width: 90%;
   max-width: 700px;
@@ -553,20 +565,6 @@ a:hover {
 }
 
 .modal-close:hover {
-  color: var(--hot-pink);
+  color: var(--gold);
   transform: rotate(90deg);
-}
-
-/* Modal Readonly Input */
-.modal-readonly {
-  background-color: rgba(255, 255, 255, 0.02) !important;
-  cursor: not-allowed;
-}
-
-/* Modal QR Image */
-.modal-qr-image {
-  max-width: 250px;
-  border: 1px solid rgba(67, 97, 238, 0.3);
-  padding: 10px;
-  border-radius: 8px;
 }

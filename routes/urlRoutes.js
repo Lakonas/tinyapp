@@ -164,7 +164,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 
 // POST /urls/:id - Update URL
 router.put('/:id', requireAuth, async (req, res) => {
-  console.log('PUT route hit! shortCode:', req.params.id);  // ADD THIS
+  console.log('PUT route hit! shortCode:', req.params.id);  
   const shortCode = req.params.id;
   const userId = req.session.userId;
   let newLongUrl = req.body.longURL;
@@ -196,7 +196,7 @@ router.put('/:id', requireAuth, async (req, res) => {
 
 // POST /urls/:id/delete - Delete URL
 router.delete('/:id', requireAuth, async (req, res) => {
-  console.log('DELETE route hit! shortCode:', req.params.id);  // ADD THIS
+  console.log('DELETE route hit! shortCode:', req.params.id);  
   const shortCode = req.params.id;
   const userId = req.session.userId;
   

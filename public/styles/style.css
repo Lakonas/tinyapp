@@ -195,6 +195,14 @@ h3, h5 {
   display: inline-block;
 }
 
+/* Second column - Long URL with overflow handling */
+.table tbody tr td:nth-child(2) {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .table td a {
   color: var(--gold);
   text-decoration: none;

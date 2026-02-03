@@ -195,6 +195,14 @@ h3, h5 {
   display: inline-block;
 }
 
+/* Second column - Long URL with overflow handling */
+.table tbody tr td:nth-child(2) {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .table td a {
   color: var(--electric-green);
   text-decoration: none;
@@ -227,6 +235,7 @@ h3, h5 {
   overflow: hidden;
 }
 
+/* Removed ripple effect - too inconsistent across button types
 .btn::before {
   content: '';
   position: absolute;
@@ -244,6 +253,7 @@ h3, h5 {
   width: 300px;
   height: 300px;
 }
+*/
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-blue), var(--deep-purple));
@@ -280,13 +290,25 @@ h3, h5 {
 
 .btn-info {
   background: var(--electric-green);
-  color: var(--dark-bg);
+  color: var(--dark-bg) !important;
   box-shadow: 0 4px 15px rgba(6, 255, 165, 0.4);
+  position: relative;
+}
+
+.btn-info::before {
+  content: none;
 }
 
 .btn-info:hover {
+  background: #07ffb0;
+  color: var(--dark-bg) !important;
   box-shadow: 0 6px 25px rgba(6, 255, 165, 0.6);
   transform: translateY(-2px);
+}
+
+.btn-info * {
+  position: relative;
+  z-index: 1;
 }
 
 .btn-outline-secondary {

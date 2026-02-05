@@ -1,12 +1,10 @@
 const {Pool} = require ('pg');
 
 const pool = new Pool({
-  user:'labber',
-  host:'localhost',
-  database: 'tinyapp',
-  password: 'labber',
-  port:5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
 });
+
 
 pool.on('connect' , () => {
   console.log('Connected to PostgreSQL database');

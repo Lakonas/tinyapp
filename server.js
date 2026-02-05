@@ -55,6 +55,7 @@ app.use('/', authRoutes);
 app.use('/urls', urlRoutes);
 
 // Redirect route (short URL to long URL)
+// Redirect route (short URL to long URL)
 app.get('/u/:id', async (req, res) => {
   const shortCode = req.params.id;
   
@@ -70,7 +71,7 @@ app.get('/u/:id', async (req, res) => {
     
     // Log the click (IP and user agent disabled for demo/privacy)
     // In production: await Click.create(url.id, req.ip, req.get('user-agent'));
-    await Click.create(shortCode, null, null);
+    await Click.create(url.id);  // CHANGED: url.id instead of shortCode
     
     res.redirect(url.long_url);
   } catch (err) {

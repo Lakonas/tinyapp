@@ -3,15 +3,15 @@ const pool = require('../config/database');
 
 class Click {
   // Create a new click record
-  static async create(shortCode, ipAddress = null, userAgent = null) {
+  static async create(urlId, ipAddress = null, userAgent = null) {
     const query = `
-      INSERT INTO clicks (short_code, clicked_at, ip_address, user_agent)
+      INSERT INTO clicks (url_id, clicked_at, ip_address, user_agent)
       VALUES ($1, NOW(), $2, $3)
       RETURNING *
     `;
     
     try {
-      const result = await pool.query(query, [shortCode, ipAddress, userAgent]);
+      const result = await pool.query(query, [urlId, ipAddress, userAgent]);
       return result.rows[0];
     } catch (err) {
       console.error('Error creating click:', err);
@@ -19,12 +19,14 @@ class Click {
     }
   }
 
-  // Get all clicks for a specific URL
+  // Get all clicks for a specific URL by short code
   static async findByShortCode(shortCode) {
     const query = `
-      SELECT * FROM clicks
-      WHERE short_code = $1
-      ORDER BY clicked_at DESC
+      SELECT c.* 
+      FROM clicks c
+      JOIN urls u ON c.url_id = u.id
+      WHERE u.short_code = $1
+      ORDER BY c.clicked_at DESC
     `;
     
     try {
@@ -36,12 +38,13 @@ class Click {
     }
   }
 
-  // Count total clicks for a URL
+  // Count total clicks for a URL by short code
   static async countByShortCode(shortCode) {
     const query = `
       SELECT COUNT(*) as count
-      FROM clicks
-      WHERE short_code = $1
+      FROM clicks c
+      JOIN urls u ON c.url_id = u.id
+      WHERE u.short_code = $1
     `;
     
     try {
@@ -57,12 +60,13 @@ class Click {
   static async getClicksByDate(shortCode, days = 7) {
     const query = `
       SELECT 
-        DATE(clicked_at) as date,
+        DATE(c.clicked_at) as date,
         COUNT(*) as count
-      FROM clicks
-      WHERE short_code = $1
-        AND clicked_at >= NOW() - INTERVAL '${days} days'
-      GROUP BY DATE(clicked_at)
+      FROM clicks c
+      JOIN urls u ON c.url_id = u.id
+      WHERE u.short_code = $1
+        AND c.clicked_at >= NOW() - INTERVAL '${days} days'
+      GROUP BY DATE(c.clicked_at)
       ORDER BY date
     `;
     
@@ -74,12 +78,14 @@ class Click {
       throw err;
     }
   }
+
   // Count unique visitors (returns 0 if IP tracking disabled)
   static async countUniqueVisitors(shortCode) {
     const query = `
-      SELECT COUNT(DISTINCT ip_address) as unique_visitors
-      FROM clicks
-      WHERE short_code = $1 AND ip_address IS NOT NULL
+      SELECT COUNT(DISTINCT c.ip_address) as unique_visitors
+      FROM clicks c
+      JOIN urls u ON c.url_id = u.id
+      WHERE u.short_code = $1 AND c.ip_address IS NOT NULL
     `;
     
     try {
@@ -90,12 +96,15 @@ class Click {
       throw err;
     }
   }
+
   // Get recent clicks (last N clicks)
   static async getRecentClicks(shortCode, limit = 10) {
     const query = `
-      SELECT * FROM clicks
-      WHERE short_code = $1
-      ORDER BY clicked_at DESC
+      SELECT c.* 
+      FROM clicks c
+      JOIN urls u ON c.url_id = u.id
+      WHERE u.short_code = $1
+      ORDER BY c.clicked_at DESC
       LIMIT $2
     `;
     
@@ -106,7 +115,7 @@ class Click {
       console.error('Error getting recent clicks:', err);
       throw err;
     }
-  }}
-  
+  }
+}
 
 module.exports = Click;

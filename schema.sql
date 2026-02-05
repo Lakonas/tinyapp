@@ -1,5 +1,5 @@
--- ShortStop Database Schema for Railway
--- PostgreSQL
+-- ShortStop Database Schema for Railway PostgreSQL
+
 
 -- Drop tables if they exist (for clean setup)
 DROP TABLE IF EXISTS clicks CASCADE;
@@ -8,9 +8,9 @@ DROP TABLE IF EXISTS users CASCADE;
 
 -- Users table
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
+  id VARCHAR(6) PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE urls (
   id SERIAL PRIMARY KEY,
   short_code VARCHAR(10) UNIQUE NOT NULL,
   long_url TEXT NOT NULL,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  user_id VARCHAR(6) REFERENCES users(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   click_count INTEGER DEFAULT 0
 );
@@ -28,7 +28,9 @@ CREATE TABLE urls (
 CREATE TABLE clicks (
   id SERIAL PRIMARY KEY,
   url_id INTEGER REFERENCES urls(id) ON DELETE CASCADE,
-  clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  ip_address VARCHAR(45),
+  user_agent TEXT
 );
 
 -- Create indexes for better performance

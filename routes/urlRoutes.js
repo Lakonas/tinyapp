@@ -263,7 +263,8 @@ router.get('/:id/qr', async (req, res) => {
     }
     
     // Build the full short URL
-    const shortURL = `http://localhost:8080/u/${shortCode}`;
+    const baseURL = process.env.BASE_URL || 'http://localhost:8080';
+    const shortURL = `${baseURL}/u/${shortCode}`;
     
     // Generate QR code as PNG buffer
     const qrCodeBuffer = await QRCode.toBuffer(shortURL, {

@@ -166,28 +166,28 @@
 
   // Copy short URL to clipboard
   function copyShortURL(shortCode) {
-    const shortURL = 'http://localhost:8080/u/' + shortCode;
+  const shortURL = '<%= baseURL %>/u/' + shortCode;
+  
+  // Modern clipboard API
+  navigator.clipboard.writeText(shortURL).then(function() {
+    // Success - show temporary feedback
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '✅ Copied!';
+    button.classList.remove('btn-outline-secondary');
+    button.classList.add('btn-success');
     
-    // Modern clipboard API
-    navigator.clipboard.writeText(shortURL).then(function() {
-      // Success - show temporary feedback
-      const button = event.target;
-      const originalText = button.innerHTML;
-      button.innerHTML = '✅ Copied!';
-      button.classList.remove('btn-outline-secondary');
-      button.classList.add('btn-success');
-      
-      // Reset after 2 seconds
-      setTimeout(function() {
-        button.innerHTML = originalText;
-        button.classList.remove('btn-success');
-        button.classList.add('btn-outline-secondary');
-      }, 2000);
-    }).catch(function(err) {
-      // Fallback for older browsers
-      alert('Short URL: ' + shortURL);
-    });
-  }
+    // Reset after 2 seconds
+    setTimeout(function() {
+      button.innerHTML = originalText;
+      button.classList.remove('btn-success');
+      button.classList.add('btn-outline-secondary');
+    }, 2000);
+  }).catch(function(err) {
+    // Fallback for older browsers
+    alert('Short URL: ' + shortURL);
+  });
+}
 
   // Close modal when clicking outside
   document.addEventListener('click', function(event) {

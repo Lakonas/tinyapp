@@ -30,7 +30,8 @@ router.get('/', requireAuth, async (req, res) => {
     const templateVars = {
       user: user,
       urls: urls,
-      message: null
+      message: null,
+      baseURL: process.env.BASE_URL || 'http://localhost:8080'
     };
     
     res.render('urls_index', templateVars);

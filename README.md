@@ -27,13 +27,13 @@ A full-stack URL shortening service with analytics, QR code generation, and user
 ## Screenshots
 
 ### Login Page
-![Login Page](https://github.com/user-attachments/assets/0ad1754f-b891-4b6e-905a-45e14dd69552)
+![Login Page](https://github.com/user-attachments/assets/0ad1754f-b891-4b8e-905a-45d14dd69552)
 
 ### URL Management Dashboard
-![URL Dashboard](https://github.com/user-attachments/assets/a9567a60-fa53-49cf-af65-fc79bdfc831b)
+![URL Dashboard](https://github.com/user-attachments/assets/a9567a80-fa53-49cf-af65-fc79bdfc831b)
 
 ### Quick Edit Modal
-![Quick Edit](https://github.com/user-attachments/assets/d2497b0e-610c-47c2-9dc0-407640d0710e)
+![Quick Edit](https://github.com/user-attachments/assets/d2497bbe-610c-47c2-9dd0-40764d40710e)
 
 ### Analytics Dashboard
 ![Analytics](https://github.com/user-attachments/assets/75ec4631-a3a1-4dfd-b492-392c2a2efbac)

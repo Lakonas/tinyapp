@@ -2,9 +2,13 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const axios = require('axios'); // ← ADD THIS for analytics tracking
 const User = require('../models/User');
 const { generateRandomString } = require('../helpers/utils');
 const { redirectIfLoggedIn } = require('../middleware/auth');
+
+// Analytics Service URL - where we send tracking events
+const ANALYTICS_URL = 'https://analytics-service-production-37cd.up.railway.app/api/events';
 
 // GET /login - Show login form
 router.get('/login', redirectIfLoggedIn, (req, res) => {
@@ -14,7 +18,6 @@ router.get('/login', redirectIfLoggedIn, (req, res) => {
   res.render('login', templateVars);
 });
 
-// POST /login - Handle login
 // POST /login - Handle login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -36,6 +39,16 @@ router.post('/login', async (req, res) => {
     
     // Login successful
     req.session.userId = user.id;
+
+    // ← ANALYTICS: Track successful login
+    axios.post(ANALYTICS_URL, {
+      source: 'shortstop',
+      event_type: 'user_login',
+      occurred_at: new Date().toISOString(),
+      metadata: { email: user.email }
+    }).catch(err => console.error('Analytics error:', err.message));
+    // ↑ .catch() so analytics failure never breaks login
+
     res.redirect('/urls');
     
   } catch (err) {
@@ -52,7 +65,6 @@ router.get('/register', redirectIfLoggedIn, (req, res) => {
   res.render('register', templateVars);
 });
 
-// POST /register - Handle registration
 // POST /register - Handle registration
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -78,6 +90,16 @@ router.post('/register', async (req, res) => {
     
     // Login the new user
     req.session.userId = newUser.id;
+
+    // ← ANALYTICS: Track new user registration
+    axios.post(ANALYTICS_URL, {
+      source: 'shortstop',
+      event_type: 'user_registered',
+      occurred_at: new Date().toISOString(),
+      metadata: { email: newUser.email }
+    }).catch(err => console.error('Analytics error:', err.message));
+    // ↑ .catch() so analytics failure never breaks registration
+
     res.redirect('/urls');
     
   } catch (err) {

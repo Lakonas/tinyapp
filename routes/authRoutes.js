@@ -2,53 +2,46 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const axios = require('axios'); // ← ADD THIS for analytics tracking
 const User = require('../models/User');
 const { generateRandomString } = require('../helpers/utils');
 const { redirectIfLoggedIn } = require('../middleware/auth');
 
-// Analytics Service URL - where we send tracking events
 const ANALYTICS_URL = 'https://analytics-service-production-37cd.up.railway.app/api/events';
 
-// GET /login - Show login form
+// Reusable fire-and-forget analytics helper
+const trackEvent = (event_type, metadata = {}) => {
+  fetch(ANALYTICS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      source: 'shortstop',
+      event_type,
+      occurred_at: new Date().toISOString(),
+      metadata
+    })
+  }).catch(err => console.error('Analytics error:', err.message));
+};
+
+// GET /login
 router.get('/login', redirectIfLoggedIn, (req, res) => {
-  const templateVars = {
-    user: null,
-  };
-  res.render('login', templateVars);
+  res.render('login', { user: null });
 });
 
-// POST /login - Handle login
+// POST /login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   
   try {
-    // Find user in database
     const user = await User.findByEmail(email);
     
-    if (!user) {
-      return res.status(400).send('Invalid email or password');
-    }
+    if (!user) return res.status(400).send('Invalid email or password');
     
-    // Check password
     const passwordMatch = bcrypt.compareSync(password, user.password_hash);
     
-    if (!passwordMatch) {
-      return res.status(400).send('Invalid email or password');
-    }
+    if (!passwordMatch) return res.status(400).send('Invalid email or password');
     
-    // Login successful
     req.session.userId = user.id;
-
-    // ← ANALYTICS: Track successful login
-    axios.post(ANALYTICS_URL, {
-      source: 'shortstop',
-      event_type: 'user_login',
-      occurred_at: new Date().toISOString(),
-      metadata: { email: user.email }
-    }).catch(err => console.error('Analytics error:', err.message));
-    // ↑ .catch() so analytics failure never breaks login
-
+    trackEvent('user_login', { email: user.email });
     res.redirect('/urls');
     
   } catch (err) {
@@ -57,49 +50,28 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET /register - Show registration form
+// GET /register
 router.get('/register', redirectIfLoggedIn, (req, res) => {
-  const templateVars = {
-    user: null,
-  };
-  res.render('register', templateVars);
+  res.render('register', { user: null });
 });
 
-// POST /register - Handle registration
+// POST /register
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
   
-  // Validate input
-  if (!email || !password) {
-    return res.status(400).send('Email and password fields cannot be empty');
-  }
+  if (!email || !password) return res.status(400).send('Email and password fields cannot be empty');
   
   try {
-    // Check if email already exists
     const existingUser = await User.findByEmail(email);
     
-    if (existingUser) {
-      return res.status(400).send('Email already in use!');
-    }
+    if (existingUser) return res.status(400).send('Email already in use!');
     
-    // Create new user
     const userId = generateRandomString();
     const passwordHash = bcrypt.hashSync(password, 10);
-    
     const newUser = await User.create(userId, email, passwordHash);
     
-    // Login the new user
     req.session.userId = newUser.id;
-
-    // ← ANALYTICS: Track new user registration
-    axios.post(ANALYTICS_URL, {
-      source: 'shortstop',
-      event_type: 'user_registered',
-      occurred_at: new Date().toISOString(),
-      metadata: { email: newUser.email }
-    }).catch(err => console.error('Analytics error:', err.message));
-    // ↑ .catch() so analytics failure never breaks registration
-
+    trackEvent('user_registered', { email: newUser.email });
     res.redirect('/urls');
     
   } catch (err) {
@@ -108,7 +80,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /logout - Handle logout
+// POST /logout
 router.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
